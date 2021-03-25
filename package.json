@@ -1,8 +1,12 @@
 {
-  "name": "actyx-demo-box",
+  "name": "sales-demo-box",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/actyx-contrib/machine-demo-box"
+  },
   "scripts": {
     "test": "npm run node:tsap-connector:test",
     "node:db-exporter:start": "nodemon --watch src/db-exporter --exec ts-node src/db-exporter/index.ts",

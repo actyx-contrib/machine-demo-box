@@ -4,3 +4,4 @@ dist
 .cache
 parcel-debug-*
 src/*/release
+coverage
