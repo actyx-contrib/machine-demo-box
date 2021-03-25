@@ -72,7 +72,7 @@ export const mkEmitter = (actyx: Pond): Emitter => {
       generateError: (tagArray, machineName, errorCode, description?) => {
         const errorId = uuid.v1()
         actyx.emit(renderTags(tagArray, machineName, errorId), {
-          eventType: 'error_occurred',
+          eventType: 'errorOccurred',
           errorId,
           machineName,
           errorCode,

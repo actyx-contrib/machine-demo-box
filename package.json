@@ -21,15 +21,22 @@
     "node:tsap-connector:package": "ax apps package src/tsap-connector/ax-manifest.yml",
     "node:tsap-connector:test": "TZ=UTC jest  --collectCoverageFrom=\"['!src/**/*.stories.tsx', './src/tsap-connector/**/*.{ts,tsx}', '!**/*.d.ts']\" --coverageDirectory=\"<rootDir>/coverage/tsap-connector\" ./src/tsap-connector",
     "node:tsap-connector:test:noCoverage": "TZ=UTC jest --coverage=false ./src/tsap-connector",
-    "node:tsap-connector:test:watch": "TZ=UTC jest --coverage=false --watch ./src/tsap-connector"
+    "node:tsap-connector:test:watch": "TZ=UTC jest --coverage=false --watch ./src/tsap-connector",
+    "ui:worker-ui:start": "parcel src/worker-ui/index.html --out-dir build/worker-ui/debug",
+    "ui:worker-ui:build": "parcel build src/worker-ui/index.html --out-dir src/worker-ui/release --public-url ./",
+    "ui:worker-ui:package": "ax apps package src/worker-ui/ax-manifest.yml"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/classnames": "^2.2.11",
     "@types/jest": "^26.0.21",
     "@types/node": "^14.14.28",
     "@types/pg": "^7.14.10",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "@types/recompose": "^0.30.7",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
@@ -40,22 +47,28 @@
     "eslint-plugin-react": "^7.22.0",
     "jest": "^26.6.3",
     "nodemon": "^2.0.7",
+    "parcel-bundler": "^1.12.3",
     "prettier": "^2.2.1",
     "ts-jest": "^26.5.4",
     "ts-node": "^9.1.1",
-    "typescript": "^4.1.5"
+    "typescript": "^4.2.3"
   },
   "axp": {
     "axpVersion": "1.2.4",
     "pondVersion": 2
   },
   "dependencies": {
+    "@actyx-contrib/react-pond": "^2.0.2",
+    "@actyx/industrial-ui": "^1.0.5",
     "@actyx/os-sdk": "^0.3.1",
     "@actyx/pond": "^2.4.1",
     "fp-ts": "^2.1.0",
     "io-ts": "^2.2.14",
     "nodes7": "^0.3.12",
     "pg": "^8.5.1",
+    "react": "^16",
+    "react-dom": "^16",
+    "recompose": "0.30.0",
     "uuid": "^8.3.2"
   }
 }

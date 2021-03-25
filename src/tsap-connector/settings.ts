@@ -19,7 +19,7 @@ const defaultSetting = {
     timeout: 8000,
   },
   pollInterval: 500,
-  errorTag: ['Machine:{id}', 'MachineError:{uuid}'],
+  errorTag: ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
   bdeVariables: {
     address: 'IB0',
     mask: '10000111',

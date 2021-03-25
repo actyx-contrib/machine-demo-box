@@ -1,0 +1,13 @@
+/*  */
+.errorLayout {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+}
+  
+@media only screen and (max-width: 780px) {
+  .errorLayout {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+}
