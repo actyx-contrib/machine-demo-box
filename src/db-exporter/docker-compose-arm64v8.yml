@@ -1,0 +1,4 @@
+version: '2.0'
+services:
+  app:
+    image: db-exporter-aarch64

@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "additionalProperties": false,
+  "required": [
+    "machineName",
+    "tsap",
+    "pollInterval",
+    "errorTag",
+    "bdeVariables",
+    "analogVariables",
+    "rules"
+  ],
+  "type": "object",
+  "properties": {
+    "machineName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "tsap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["port", "host", "localTSAP", "remoteTSAP", "timeout"],
+      "properties": {
+        "port": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "host": {
+          "type": "string",
+          "format": "ipv4"
+        },
+        "localTSAP": {
+          "type": "string",
+          "pattern": "^0x[0-9A-Fa-f]{2,4}$"
+        },
+        "remoteTSAP": {
+          "type": "string",
+          "pattern": "^0x[0-9A-Fa-f]{2,4}$"
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 2000,
+          "default": 8000,
+          "maximum": 15000
+        }
+      }
+    },
+    "pollInterval": {
+      "type": "number",
+      "minimum": 100,
+      "maximum": 30000
+    },
+    "errorTag": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9.]*(\\:\\{id\\}|\\:\\{uuid\\}){0,1}$"
+      },
+      "minItems": 1
+    },
+    "bdeVariables": {
+      "type": "object",
+      "required": ["address", "mask", "publishUnknownState"],
+      "properties": {
+        "address": {
+          "type": "string",
+          "minLength": 2,
+          "default": "IB0"
+        },
+        "mask": {
+          "type": "string",
+          "pattern": "^[01]{8}$",
+          "default": "11111111"
+        },
+        "publishUnknownState": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "analogVariables": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["address"],
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_ ]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["bdeState", "inputs"],
+        "additionalProperties": false,
+        "properties": {
+          "bdeState": {
+            "type": "number"
+          },
+          "inputs": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "generateError": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "default": {
+    "machineName": "Machine 1",
+    "tsap": {
+      "port": 102,
+      "host": "192.168.0.1",
+      "localTSAP": "0x0100",
+      "remoteTSAP": "0x0200",
+      "timeout": 8000
+    },
+    "pollInterval": 500,
+    "errorTag": ["Machine:{id}", "MachineError:{uuid}"],
+    "bdeVariables": {
+      "address": "IB0",
+      "mask": "11111111",
+      "publishUnknownState": false
+    },
+    "analogVariables": {
+      "counter": {
+        "address": "DB1,INT1024"
+      }
+    },
+    "rules": {
+      "On": {
+        "bdeState": 1,
+        "inputs": 1
+      },
+      "Off": {
+        "bdeState": 0,
+        "inputs": 0
+      },
+      "Error A": {
+        "bdeState": 10,
+        "inputs": 3,
+        "generateError": true
+      },
+      "Emergency": {
+        "bdeState": 99,
+        "inputs": 128
+      }
+    }
+  }
+}

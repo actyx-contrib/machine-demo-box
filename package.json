@@ -1,0 +1,57 @@
+{
+  "name": "actyx-demo-box",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run node:tsap-connector:test",
+    "node:db-exporter:start": "nodemon --watch src/db-exporter --exec ts-node src/db-exporter/index.ts",
+    "node:db-exporter:build": "tsc src/db-exporter/index.ts --outDir build/db-exporter --esModuleInterop --skipLibCheck",
+    "node:db-exporter:docker:build": "npm run node:db-exporter:build && docker build -t db-exporter -f src/db-exporter/Dockerfile .",
+    "node:db-exporter:docker:build-aarch64": "npm run node:db-exporter:build && docker buildx build --platform linux/arm64 -t db-exporter-aarch64 -f src/db-exporter/Dockerfile --load .",
+    "node:db-exporter:package": "ax apps package src/db-exporter/ax-manifest.yml",
+    "node:tsap-connector:start": "nodemon --watch src/tsap-connector --exec ts-node src/tsap-connector/index.ts",
+    "node:tsap-connector:build": "tsc src/tsap-connector/index.ts --outDir build/tsap-connector --esModuleInterop --skipLibCheck",
+    "node:tsap-connector:docker:build": "npm run node:tsap-connector:build && docker build -t tsap-connector -f src/tsap-connector/Dockerfile .",
+    "node:tsap-connector:docker:build-aarch64": "npm run node:tsap-connector:build && docker buildx build --platform linux/arm64 -t tsap-connector-aarch64 -f src/tsap-connector/Dockerfile --load .",
+    "node:tsap-connector:package": "ax apps package src/tsap-connector/ax-manifest.yml",
+    "node:tsap-connector:test": "TZ=UTC jest  --collectCoverageFrom=\"['!src/**/*.stories.tsx', './src/tsap-connector/**/*.{ts,tsx}', '!**/*.d.ts']\" --coverageDirectory=\"<rootDir>/coverage/tsap-connector\" ./src/tsap-connector",
+    "node:tsap-connector:test:noCoverage": "TZ=UTC jest --coverage=false ./src/tsap-connector",
+    "node:tsap-connector:test:watch": "TZ=UTC jest --coverage=false --watch ./src/tsap-connector"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^26.0.21",
+    "@types/node": "^14.14.28",
+    "@types/pg": "^7.14.10",
+    "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.15.1",
+    "@typescript-eslint/parser": "^4.15.1",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1",
+    "ts-jest": "^26.5.4",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.5"
+  },
+  "axp": {
+    "axpVersion": "1.2.4",
+    "pondVersion": 2
+  },
+  "dependencies": {
+    "@actyx/os-sdk": "^0.3.1",
+    "@actyx/pond": "^2.4.1",
+    "fp-ts": "^2.1.0",
+    "io-ts": "^2.2.14",
+    "nodes7": "^0.3.12",
+    "pg": "^8.5.1",
+    "uuid": "^8.3.2"
+  }
+}
