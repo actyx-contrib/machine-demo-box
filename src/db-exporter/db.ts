@@ -70,6 +70,27 @@ const setupTables = async (client: Client) => {
     ALTER TABLE public."t_valueChanged"
         OWNER to postgres;`,
   )
+
+  await client.query(
+    `CREATE TABLE IF NOT EXISTS public."t_error"
+    (
+        "id" character varying(40) COLLATE pg_catalog."default" NOT NULL,
+        "timestamp" timestamp with time zone NOT NULL,
+        "state" varchar(100) COLLATE pg_catalog."default" NOT NULL,
+        "device" varchar(100) COLLATE pg_catalog."default" NOT NULL,
+        "errorCode" integer NOT NULL,
+        "description" text COLLATE pg_catalog."default" NOT NULL,
+        "openTimestamp" timestamp with time zone,
+        "acknowledgedTimestamp" timestamp with time zone,
+        "ignoredTimestamp" timestamp with time zone,
+        CONSTRAINT "t_error_pkey" PRIMARY KEY (id)
+    )
+
+    TABLESPACE pg_default;
+
+    ALTER TABLE public."t_error"
+        OWNER to postgres;`,
+  )
 }
 
 export const getOffsetMap = async (client: Client): Promise<OffsetMap> => {
@@ -151,4 +172,42 @@ export const insertValueEvent = async (
        ON CONFLICT ("id") DO NOTHING`,
     )
     .catch((err) => log.error(err.stack, events.length))
+}
+
+export type DbError = {
+  id: string
+  timestamp: number
+  state: string
+  device: string
+  errorCode: number
+  description: string
+  openTimestamp?: number
+  acknowledgedTimestamp?: number
+  ignoredTimestamp?: number
+}
+
+export type DbErrors = ReadonlyArray<DbError>
+
+export const updateErrors = async (client: Client, errors: DbErrors): Promise<void> => {
+  if (errors.length === 0) {
+    return
+  }
+  const values = errors
+    .map((error) => {
+      const tsOpen = error.openTimestamp ? `TO_TIMESTAMP(${error.openTimestamp})` : 'NULL'
+      const tsAck = error.acknowledgedTimestamp
+        ? `TO_TIMESTAMP(${error.acknowledgedTimestamp})`
+        : 'NULL'
+      const tsIgnored = error.ignoredTimestamp ? `TO_TIMESTAMP(${error.ignoredTimestamp})` : 'NULL'
+      return `('${error.id}', TO_TIMESTAMP(${error.timestamp}), '${error.state}', '${error.device}', '${error.errorCode}', '${error.description}', ${tsOpen}, ${tsAck}, ${tsIgnored})`
+    })
+    .join(',')
+
+  await client
+    .query(
+      `INSERT INTO public."t_error" ("id", "timestamp", "state", "device", "errorCode", "description", "openTimestamp", "acknowledgedTimestamp", "ignoredTimestamp")
+       VALUES ${values}
+       ON CONFLICT ("id") DO NOTHING`,
+    )
+    .catch((err) => log.error(err.stack, errors.length))
 }

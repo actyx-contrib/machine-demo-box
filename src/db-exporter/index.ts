@@ -2,6 +2,7 @@ import { Client, OffsetMap, Ordering, Event, Subscription } from '@actyx/os-sdk'
 import { log } from './logger'
 import { appSettings } from './utils'
 import { dbInit, getOffsetMap, insertToDb } from './db'
+import { errorExport } from './eventExporter'
 
 const ax = Client()
 const es = ax.eventService
@@ -24,6 +25,8 @@ const main = async () => {
   log.info('init PostgreSQL connection')
   const pg = await dbInit(settings.db)
   log.info('PostgreSQL connected')
+
+  errorExport(pg)
 
   const lowerBound = await getOffsetMap(pg)
 

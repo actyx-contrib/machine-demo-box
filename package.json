@@ -24,7 +24,12 @@
     "node:tsap-connector:test:watch": "TZ=UTC jest --coverage=false --watch ./src/tsap-connector",
     "ui:worker-ui:start": "parcel src/worker-ui/index.html --out-dir build/worker-ui/debug",
     "ui:worker-ui:build": "parcel build src/worker-ui/index.html --out-dir src/worker-ui/release --public-url ./",
-    "ui:worker-ui:package": "ax apps package src/worker-ui/ax-manifest.yml"
+    "ui:worker-ui:package": "ax apps package src/worker-ui/ax-manifest.yml",
+    "node:opcua-connector:start": "nodemon --watch src/opcua-connector --exec ts-node src/opcua-connector/index.ts",
+    "node:opcua-connector:build": "tsc src/opcua-connector/index.ts --outDir build/opcua-connector --esModuleInterop --skipLibCheck",
+    "node:opcua-connector:docker:build": "npm run node:opcua-connector:build && docker build -t opcua-connector -f src/opcua-connector/Dockerfile .",
+    "node:opcua-connector:docker:build-aarch64": "npm run node:opcua-connector:build && docker buildx build --platform linux/arm64 -t opcua-connector-aarch64 -f src/opcua-connector/Dockerfile --load .",
+    "node:opcua-connector:package": "ax apps package src/opcua-connector/ax-manifest.yml"
   },
   "keywords": [],
   "author": "",
@@ -59,6 +64,7 @@
   },
   "dependencies": {
     "@actyx-contrib/react-pond": "^2.0.2",
+    "@actyx-contrib/rx-pond": "^0.2.0",
     "@actyx/industrial-ui": "^1.0.5",
     "@actyx/os-sdk": "^0.3.1",
     "@actyx/pond": "^2.4.1",
@@ -69,6 +75,7 @@
     "react": "^16",
     "react-dom": "^16",
     "recompose": "0.30.0",
+    "rxjs": "^6.6.6",
     "uuid": "^8.3.2"
   }
 }

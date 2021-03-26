@@ -194,8 +194,8 @@ export const ErrorFish = {
       return state
     },
   }),
-  registry: (): Fish<Record<string, boolean>, RegistryEvents> => ({
-    fishId: FishId.of('ErrorFishRegistry', 'registry', 0),
+  registryOpen: (): Fish<Record<string, boolean>, RegistryEvents> => ({
+    fishId: FishId.of('ErrorFishRegistryOpen', 'registry', 0),
     initialState: {},
     where: errorOccurredTag.or(errorDoneTag),
     onEvent: (state, event) => {
@@ -206,6 +206,19 @@ export const ErrorFish = {
         case 'errorAcknowledged':
         case 'errorIgnored':
           delete state[event.errorId]
+          break
+      }
+      return state
+    },
+  }),
+  registry: (): Fish<Record<string, boolean>, RegistryEvents> => ({
+    fishId: FishId.of('ErrorFishRegistry', 'registry', 0),
+    initialState: {},
+    where: errorOccurredTag,
+    onEvent: (state, event) => {
+      switch (event.eventType) {
+        case 'errorOccurred':
+          state[event.errorId] = true
           break
       }
       return state

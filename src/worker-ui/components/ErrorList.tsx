@@ -10,7 +10,7 @@ const isActive = (error: State): error is DefinedState => error.type !== 'undefi
 
 export const ErrorList = (): JSX.Element => {
   const [rowSelected, setRowSelected] = React.useState('')
-  const errorList = useRegistryFish(ErrorFish.registry(), Object.keys, ErrorFish.of)
+  const errorList = useRegistryFish(ErrorFish.registryOpen(), Object.keys, ErrorFish.of)
 
   const titles = ['Timestamp', 'Machine', 'Error Code', 'Description']
 
