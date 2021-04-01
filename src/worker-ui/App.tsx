@@ -11,8 +11,8 @@ export const App = (): JSX.Element => {
   const pond = usePond()
   React.useEffect(() => {
     document.addEventListener('keydown', (e) => {
-      console.log(e)
-      if (e.key === 'D' && e.shiftKey && e.altKey) {
+      if (e.code === 'KeyD' && e.shiftKey && e.altKey && e.ctrlKey) {
+        console.log('Enabling development mode')
         setDevMode(true)
       }
     })
