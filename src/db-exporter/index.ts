@@ -9,7 +9,7 @@ const es = ax.eventService
 
 const defaultSettings = {
   db: {
-    host: '192.168.150.74',
+    host: '127.0.0.1',
     port: 5432,
     user: 'postgres',
     password: 'postgres',
