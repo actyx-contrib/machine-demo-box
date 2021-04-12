@@ -1,22 +1,19 @@
 # Visualizing data from the shop floor
 
-Machine data is exported to a [postgreSQL](https://www.postgresql.org/) DB using visualized using the `db-exporter` connector application. From there, we visualize the data using [Grafana](https://grafana.org/).
+Machine data is exported to a [postgreSQL](https://www.postgresql.org/) DB using the `db-exporter` connector application. From there, we visualize the data using [Grafana](https://grafana.org/).
 
 The default dashboard shows the following KPIs:
-
-per machine:
-
-* KPI (groupBy status) (PieChart) (check readme - settings in tsap-connector)
-* OEE
-* Values in graphen over time
-* Error barchart over time: Ignored Yellow) / Acknowledged
+* Errors by machine over time 
+* Errors by status over time
+* Error resolution percentage
+* TODO: Single value per machine over time
+* TODO: Machine status over time
+* TODO: Machine status percentage per machine
 
 ## Quickstart
 
 We'll run both the database and grafana within docker. Use the snippet below _in `src/postgres-grafana`_ to start both containers with default configurations.
 Point your browser to http://localhost:3000/d/actyx-adb/actyx-demo-box.
-
-TODO: @Alex, what was the reason not to use `docker-compose`? Would make linking postgres & grafana more straight forward, IMHO
 
 ```bash
 # clean up
@@ -25,7 +22,7 @@ docker stop actyx_demo_box-postgres && docker rm actyx_demo_box-postgres
 
 # start postgres
 docker run -d --name actyx_demo_box-postgres --restart always \
-  -v pg-data:/var/lib/postgresql/data \
+  -v ${PWD}/pg-data:/var/lib/postgresql/data \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   -e POSTGRES_DB=postgres \
