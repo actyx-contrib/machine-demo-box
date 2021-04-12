@@ -14,17 +14,17 @@ per machine:
 ## Quickstart
 
 We'll run both the database and grafana within docker. Use the snippet below _in `src/postgres-grafana`_ to start both containers with default configurations.
-Point your browser to http://localhost:3000/d/actyx-dmb/machine-demo-box.
+Point your browser to http://localhost:3000/d/actyx-adb/actyx-demo-box.
 
 TODO: @Alex, what was the reason not to use `docker-compose`? Would make linking postgres & grafana more straight forward, IMHO
 
 ```bash
 # clean up
-docker stop dmb-grafana && docker rm dmb-grafana 
-docker stop dmb-postgres && docker rm dmb-postgres 
+docker stop actyx_demo_box-grafana && docker rm actyx_demo_box-grafana 
+docker stop actyx_demo_box-postgres && docker rm actyx_demo_box-postgres 
 
 # start postgres
-docker run -d --name dmb-postgres --restart always \
+docker run -d --name actyx_demo_box-postgres --restart always \
   -v pg-data:/var/lib/postgresql/data \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
@@ -33,8 +33,8 @@ docker run -d --name dmb-postgres --restart always \
   postgres:12-alpine
 
 # start grafana
-docker run -d --name dmb-grafana --restart always \
-  -v${PWD}/grafana-provisioning:/etc/grafana/provisioning/ \
+docker run -d --name actyx_demo_box-grafana --restart always \
+  -v ${PWD}/grafana-provisioning:/etc/grafana/provisioning/ \
   -e GF_AUTH_ANONYMOUS_ENABLED=true \
   -p 3000:3000 \
   --add-host="db:172.17.0.1" \

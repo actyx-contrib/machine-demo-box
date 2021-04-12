@@ -15,6 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -47,16 +48,18 @@
     },
     {
       "aliasColors": {},
-      "bars": true,
+      "bars": false,
       "dashLength": 10,
       "dashes": false,
       "datasource": "PostgreSQL",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "unit": "short"
+        },
         "overrides": []
       },
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 4,
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -151,7 +154,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Errors by Device",
+      "title": "Errors over time",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -466,6 +469,7 @@
       "type": "piechart"
     }
   ],
+  "refresh": "5s",
   "schemaVersion": 27,
   "style": "dark",
   "tags": [],
@@ -473,12 +477,12 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Machine Demo Box",
-  "uid": "actyx-dmb",
-  "version": 1
+  "title": "Actyx Demo Box",
+  "uid": "actyx-adb",
+  "version": 2
 }
