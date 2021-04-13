@@ -29,7 +29,12 @@
     "node:opcua-connector:build": "tsc src/opcua-connector/index.ts --outDir build/opcua-connector --esModuleInterop --skipLibCheck",
     "node:opcua-connector:docker:build": "npm run node:opcua-connector:build && docker build -t opcua-connector -f src/opcua-connector/Dockerfile .",
     "node:opcua-connector:docker:build-aarch64": "npm run node:opcua-connector:build && docker buildx build --platform linux/arm64 -t opcua-connector-aarch64 -f src/opcua-connector/Dockerfile --load .",
-    "node:opcua-connector:package": "ax apps package src/opcua-connector/ax-manifest.yml"
+    "node:opcua-connector:package": "ax apps package src/opcua-connector/ax-manifest.yml",
+    "node:mock-machine-connector:start": "nodemon --watch src/mock-machine-connector --exec ts-node src/mock-machine-connector/index.ts",
+    "node:mock-machine-connector:build": "tsc src/mock-machine-connector/index.ts --outDir build/mock-machine-connector --esModuleInterop --skipLibCheck",
+    "node:mock-machine-connector:docker:build": "npm run node:mock-machine-connector:build && docker build -t mock-machine-connector -f src/mock-machine-connector/Dockerfile .",
+    "node:mock-machine-connector:docker:build-aarch64": "npm run node:mock-machine-connector:build && docker buildx build --platform linux/arm64 -t mock-machine-connector-aarch64 -f src/mock-machine-connector/Dockerfile --load .",
+    "node:mock-machine-connector:package": "ax apps package src/mock-machine-connector/ax-manifest.yml"
   },
   "keywords": [],
   "author": "",

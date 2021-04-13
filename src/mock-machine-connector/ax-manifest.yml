@@ -1,0 +1,9 @@
+manifestVersion: "1.0"
+type: docker
+id: mock-machine-connector
+version: 1.0.0
+displayName: mock-machine-connector
+description: "@ToDo: description"
+dockerCompose:
+    x86_64: ./docker-compose-amd64.yml
+settingsSchema: ./settings-schema.json
