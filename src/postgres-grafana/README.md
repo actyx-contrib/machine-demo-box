@@ -20,7 +20,7 @@ Point your browser to http://localhost:3000/d/actyx-adb/actyx-demo-box.
 docker stop actyx_demo_box-grafana && docker rm actyx_demo_box-grafana 
 docker stop actyx_demo_box-postgres && docker rm actyx_demo_box-postgres 
 
-# start postgres
+# init postgres
 docker run -d --name actyx_demo_box-postgres --restart always \
   -v ${PWD}/pg-data:/var/lib/postgresql/data \
   -e POSTGRES_USER=postgres \
@@ -29,7 +29,7 @@ docker run -d --name actyx_demo_box-postgres --restart always \
   -p 5432:5432 \
   postgres:12-alpine
 
-# start grafana
+# init grafana
 docker run -d --name actyx_demo_box-grafana --restart always \
   -v ${PWD}/grafana-provisioning:/etc/grafana/provisioning/ \
   -e GF_AUTH_ANONYMOUS_ENABLED=true \
