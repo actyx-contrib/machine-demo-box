@@ -85,7 +85,7 @@ Pond.default().then((pond) => {
       if (newState === State.ERROR) {
         const { errorCode, description } = getRandomError()
         console.log('emit error:', machineName, errorCode, description)
-        em.stateEvent(machineName, errorCode, description)
+        em.stateEvent(machineName, newState, description)
         em.generateError(
           ['Machine:' + machineName, 'error:' + uuid.v1(), 'error.Occurred'],
           machineName,
