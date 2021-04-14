@@ -9,6 +9,7 @@ datasources:
     url: db:5432
     database: postgres
     user: postgres
+    isDefault: true
     secureJsonData:
       password: "postgres"
     jsonData:
