@@ -96,8 +96,8 @@ while getopts $OPTSPEC option; do
     v ) opt_version="true"; version; exit 0  ;;
     c ) opt_clean="true"; clean;  ;;
     i ) opt_init="true"; init;  ;;
-    s ) opt_start="true"; start;  ;;
     x ) opt_stop="true"; stop;  ;;
+    s ) opt_start="true"; start;  ;;
     d ) opt_data=$OPTARG;  ;;
     p ) opt_provisioning=$OPTARG;  ;;
    \? ) echo "Unknown option: -$OPTARG" >&2; exit 1;;
