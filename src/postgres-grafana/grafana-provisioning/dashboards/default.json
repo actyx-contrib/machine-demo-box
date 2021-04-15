@@ -42,19 +42,20 @@
               "from": "2",
               "id": 2,
               "text": "ERROR",
-              "to": "4",
-              "type": 1,
-              "value": "2"
+              "to": "100",
+              "type": 2,
+              "value": "10"
             },
             {
-              "from": "0",
+              "from": "-1",
               "id": 3,
               "text": "IDLE",
               "to": "1",
-              "type": 1,
+              "type": 2,
               "value": "0"
             }
           ],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -89,7 +90,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "last"
+            "lastNotNull"
           ],
           "fields": "",
           "values": false
@@ -129,6 +130,7 @@
         }
       ],
       "title": "Machine State",
+      "transformations": [],
       "type": "stat"
     },
     {
@@ -498,7 +500,9 @@
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
+      "timeShift": null,
       "title": "Speed",
       "tooltip": {
         "shared": true,
