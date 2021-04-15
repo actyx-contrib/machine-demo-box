@@ -84,7 +84,7 @@ Pond.default().then((pond) => {
         console.log('emit error:', machineName, errorCode, description)
         em.stateEvent(machineName, errorCode, description)
         em.generateError(
-          ['Machine:' + machineName, 'error:' + uuid.v1(), 'error.Occurred'],
+          ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
           machineName,
           errorCode,
           description,
