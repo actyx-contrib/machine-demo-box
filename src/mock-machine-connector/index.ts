@@ -2,7 +2,7 @@ import { Pond } from '@actyx/pond'
 import { mkEmitter } from '../tsap-connector/emitter'
 import * as uuid from 'uuid'
 
-const machineName = 'mock machine 1'
+const mkMachineName = () => 'mock machine ' + Math.floor(Math.random() * 3 + 1)
 
 enum State {
   IDLE,
@@ -57,11 +57,13 @@ Pond.default().then((pond) => {
     temp = Math.max(25, Math.min(55, temp))
     temp = Math.floor(temp * 1000) / 1000
 
+    const machineName = mkMachineName()
     console.log('emit temp:', machineName, 'temperature', temp)
     em.valueEvent(machineName, 'temperature', temp)
   }, 2_000)
 
   setInterval(() => {
+    const machineName = mkMachineName()
     if (state === State.RUNNING) {
       speed += (Math.random() - 0.5) * 0.1
       speed = Math.max(0.2, Math.min(1.8, speed))
@@ -79,6 +81,7 @@ Pond.default().then((pond) => {
   setInterval(() => {
     const newState = getNewState(state)
     if (newState !== state) {
+      const machineName = mkMachineName()
       if (newState === State.ERROR) {
         const { errorCode, description } = getRandomError()
         console.log('emit error:', machineName, errorCode, description)
