@@ -26,8 +26,8 @@ usage() {
   printf "  -%s\t%s - %s%s\n" "i" "init" "Start containers for the first time" ""
   printf "  -%s\t%s - %s%s\n" "s" "start" "Start existing containers" ""
   printf "  -%s\t%s - %s%s\n" "x" "stop" "Stop running containers" ""
-  printf "  -%s\t%s - %s%s\n" "d" "data" "Data folder for PostgreSQL data" " (default: grafana-provisioning)"
-  printf "  -%s\t%s - %s%s\n" "p" "provisioning" "Data folder for provisioning Grafana" " (default: pg-data)"
+  printf "  -%s\t%s - %s%s\n" "d" "data" "Data folder for PostgreSQL data (relative to the current working directory)" " (default: grafana-provisioning)"
+  printf "  -%s\t%s - %s%s\n" "p" "provisioning" "Data folder for provisioning Grafana (relative to the current working directory)" " (default: pg-data)"
 }
 
 version() {
@@ -54,7 +54,8 @@ clean() {
 }
 
 init() {
-  echo "Initializing and starting dashboard and database" 
+  echo "Initializing and starting dashboard and database ..." 
+  echo "PostgreSQL data folder: $opt_data" 
   mkdir -p $opt_data
   docker run -d --name actyx_demo_box-postgres --restart always \
     -v ${PWD}/${opt_data}:/var/lib/postgresql/data \
@@ -65,6 +66,7 @@ init() {
   postgres:12-alpine
 
 # init grafana
+  echo "Grafana provisioning folder data folder: $opt_provisioning" 
   docker run -d --name actyx_demo_box-grafana --restart always \
     -v ${PWD}/${opt_provisioning}:/etc/grafana/provisioning/ \
     -e GF_AUTH_ANONYMOUS_ENABLED=true \

@@ -3,12 +3,15 @@
 Machine data is exported to a [postgreSQL](https://www.postgresql.org/) DB using the `db-exporter` connector application. From there, we visualize the data using [Grafana](https://grafana.org/).
 
 The default dashboard shows the following KPIs:
-* Errors by machine over time 
+
+* Current machine states (`running`, `idle`, `error`)
+* Current machine temperatures
+* Current machine operating speeds
+* Machine temperatures over time
+* Machine speeds over time
+* Errors over time
 * Errors by status over time
 * Error resolution percentage
-* TODO: Single value per machine over time
-* TODO: Machine status over time
-* TODO: Machine status percentage per machine
 
 ## Quickstart
 

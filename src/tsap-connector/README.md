@@ -1,13 +1,14 @@
-# TSAP-connector
+# TSAP Connector
 
-- Example for advanced settings with schema and what you can achieve
-- Connect to a S7/Siemens Logo! and pool values in a interval
-- Convert inputs with a rule set to events
-- read analog values and emit on change
-- create error-occurred events, with tags from the settings
+This connector application shows how to implement a generic, configurable TSAP connector to talk to S7/Siemens Logo! PLCs
 
+The possible settings are described using JSON schema and are validated during application startup. Settings can be passed to the application using the `APP_SETTINGS` environment variable.
 
-## Settings
+Values from the PLC are [polled in a configurable interval](./plc-connect.ts#L38), [converted to events](./plc-connect.ts#L66) using a [configurable rule set](./settings.ts#L38) and emitted in case the value changed.
+
+Error events are emitted based on the `generateError` property from the conversion rule configuration.
+
+## Settings Example
 
 ```JSON
 {
