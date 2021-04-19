@@ -1,6 +1,5 @@
 import { Pond } from '@actyx/pond'
 import { mkEmitter } from '../tsap-connector/emitter'
-import * as uuid from 'uuid'
 
 const mkMachineName = () => 'mock machine ' + Math.floor(Math.random() * 3 + 1)
 
