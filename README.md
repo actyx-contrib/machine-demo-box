@@ -51,17 +51,53 @@ The relevant inputs can be configured and converted into events using a (also co
 For details, see [the application's README](./src/tsap-connector/README.md).
 #### OPC UA
 
-We're sorry, the OPC UA connector is not quite finished at the moment.
-If you need already it, please let us know via https://community.actyx.com/.
+We're sorry, the OPC UA connector is not quite finished yet.
+
+If you do need it _now_, please let us know via https://community.actyx.com/.
 
 ### 🎲 Mock Machine Connector
 
+The mock machine connector randomly generates different sample events:
+
+* Machine speed readings
+* Machine temperature readings
+* Machine state changes
+* Error events
+
+The event types correspond to the ones that are emitted from machine connectors.
+
 ### 🗃️ DB Connector
 
-### 📊 Dashboard
+The DB connector consumes events from the Actyx swarm and exports them into an external database. From this database, the dashboard vizalisations are fed with data.
 
- For details, please refer to [the application's README](src/postgres-grafana/README.md)
+The exporter is configured to [connect to a PostgreSQL DB on `localhost:5432`](./src/db-exporter/index.ts#L10).
+
+It inserts events into the database in [5s intervals](./src/db-exporter/index.ts#L69) and [batches of 100 events](./src/db-exporter/index.ts#L55). It applies [backpressure](./src/db-exporter/index.ts#L70) as not to overwhelm the database. This might not seem relevant in the demo case, but is included as an elementary pattern to apply in real world use cases.
+
+Events that have already been processed is tracked and [persisted](./src/db-exporter/db.ts#L119) using [OffsetMap](https://developer.actyx.com/docs/reference/js-ts-sdk/interfaces/offsetmap). This can be used to omit superfluous writes to external systems.
+
+The database schema and statements are implemented in [./src/db-exporter/db.ts](./src/db-exporter/db.ts).
 
 ### 👷‍♂️ Worker UI
 
-control + Shift + Alt + D  for dev mode in ui
+The Worker UI displays current errors and allows for acknowledging and dismissing them. The error resolutions are tracked and visualized on the dashboard.
+
+To generate errors, you can either ...
+
+* ... configure them in a `machine connector` and produce them on an actual PLC,
+* ... use the `mock machine connector` for generating random errors, or
+* ... open the development mode in the UI by pressing `Ctrl + Shift + Alt + D`
+
+The interface is built in ReactJS using the [Actyx `industrial-ui` library](https://www.npmjs.com/package/@actyx/industrial-ui) with small modifications.
+
+![Worker UI](./doc/worker-ui.png "Worker UI")
+
+
+### 📊 Dashboard
+
+For details, please refer to [the application's README](src/postgres-grafana/README.md)
+
+![Dashboard Machine Data](./doc/dashboard-machines.png "Machine Data")
+
+![Dashboard Error Data](./doc/dashboard-errors.png "Error Data")
+
