@@ -5,7 +5,6 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
@@ -563,9 +562,7 @@
       "dashes": false,
       "datasource": "PostgreSQL",
       "fieldConfig": {
-        "defaults": {
-          "unit": "short"
-        },
+        "defaults": {},
         "overrides": []
       },
       "fill": 1,
@@ -599,7 +596,13 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [],
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:1157",
+          "alias": "error occurrences",
+          "color": "#E02F44"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
@@ -624,7 +627,7 @@
           "hide": false,
           "metricColumn": "device",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroupAlias(\"timestamp\",$__interval),\n  concat('Device ', device) AS metric,\n  count(id) AS \"no of errors\"\nFROM t_error\nWHERE\n  $__timeFilter(\"timestamp\")\nGROUP BY 1, device,2\nORDER BY 1,2",
+          "rawSql": "SELECT\n  $__timeGroupAlias(\"timestamp\",$__interval),\n  count(id) AS \"error occurrences\"\nFROM \"t_stateChanged\"\nWHERE\n  $__timeFilter(\"timestamp\")\n  AND \"newState\" > 1\nGROUP BY 1\nORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -664,7 +667,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Errors over time",
+      "title": "Overall number of error occurrences over time",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -709,6 +712,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "PostgreSQL",
+      "description": "",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -796,7 +800,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Errors by status",
+      "title": "Error occurrence time with current status",
       "tooltip": {
         "shared": true,
         "sort": 0,
