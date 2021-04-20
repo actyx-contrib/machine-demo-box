@@ -4,8 +4,8 @@ This example contains applications to get you started with ...
 
 * ... connecting a machine to an Actyx environment,
 * ... reading values from the machine,
-* ... visualizing values on a dashboard,
-* ... interacting using a web interface,
+* ... visualizing values on a dashboard, and
+* ... interacting using a web interface.
 
 It also comes with a mock data generator that produces random values for visualization, in case you don't have a PLC at hand.
 
