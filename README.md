@@ -96,6 +96,8 @@ The interface is built in ReactJS using the [Actyx `industrial-ui` library](http
 
 For details, please refer to [the application's README](src/postgres-grafana/README.md)
 
-![Dashboard Machine Data](./doc/dashboard-machines.png "Machine Data")
+![Dashboard Machine Data](./doc/dashboard-machines-1.png "Machine Data 1")
+
+![Dashboard Machine Data](./doc/dashboard-machines-2.png "Machine Data 2")
 
 ![Dashboard Error Data](./doc/dashboard-errors.png "Error Data")

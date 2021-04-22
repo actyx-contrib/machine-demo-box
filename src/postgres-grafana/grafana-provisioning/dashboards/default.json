@@ -5,7 +5,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1619086783218,
+  "iteration": 1619090645721,
   "links": [],
   "panels": [
     {
@@ -76,7 +76,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 11,
+        "h": 7,
         "w": 24,
         "x": 0,
         "y": 1
@@ -128,7 +128,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Panel Title",
+      "title": "Machine State",
       "type": "stat"
     },
     {
@@ -151,7 +151,7 @@
         "h": 9,
         "w": 8,
         "x": 0,
-        "y": 12
+        "y": 8
       },
       "hiddenSeries": false,
       "id": 20,
@@ -307,7 +307,7 @@
         "h": 9,
         "w": 8,
         "x": 8,
-        "y": 12
+        "y": 8
       },
       "hiddenSeries": false,
       "id": 23,
@@ -332,7 +332,7 @@
       "points": false,
       "renderer": "flot",
       "repeatDirection": "h",
-      "repeatIteration": 1619086783218,
+      "repeatIteration": 1619090645721,
       "repeatPanelId": 20,
       "scopedVars": {
         "machines": {
@@ -464,7 +464,7 @@
         "h": 9,
         "w": 8,
         "x": 16,
-        "y": 12
+        "y": 8
       },
       "hiddenSeries": false,
       "id": 24,
@@ -489,7 +489,7 @@
       "points": false,
       "renderer": "flot",
       "repeatDirection": "h",
-      "repeatIteration": 1619086783218,
+      "repeatIteration": 1619090645721,
       "repeatPanelId": 20,
       "scopedVars": {
         "machines": {
@@ -635,7 +635,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 17
       },
       "id": 16,
       "options": {
@@ -747,7 +747,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 17
       },
       "id": 18,
       "options": {
@@ -843,13 +843,39 @@
           },
           "unit": "short"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "mock machine 3",
+                  "mock machine 1"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "graph": true,
+                  "legend": false,
+                  "tooltip": false
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 25
       },
       "id": 12,
       "options": {
@@ -911,7 +937,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 14,
@@ -945,7 +971,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__time(\"timestamp\"),\n  device as metric,\n  value\nFROM\n  \"t_valueChanged\"\nWHERE\n  $__timeFilter(\"timestamp\") AND \n  name = 'speed'",
+          "rawSql": "SELECT\n  $__time(\"timestamp\"),\n  device as metric,\n  value\nFROM\n  \"t_valueChanged\"\nWHERE\n  $__timeFilter(\"timestamp\") AND \n  name = 'speed'\nORDER BY 1\n",
           "refId": "A",
           "select": [
             [
@@ -1017,7 +1043,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 33
       },
       "id": 8,
       "panels": [],
@@ -1040,7 +1066,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 2,
@@ -1192,7 +1218,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 46
+        "y": 42
       },
       "hiddenSeries": false,
       "id": 4,
@@ -1383,7 +1409,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 46
+        "y": 42
       },
       "id": 6,
       "options": {
@@ -1462,7 +1488,6 @@
         "allValue": null,
         "current": {
           "selected": true,
-          "tags": [],
           "text": [
             "mock machine 1",
             "mock machine 2",
@@ -1505,5 +1530,5 @@
   "timezone": "",
   "title": "Actyx Demo Box",
   "uid": "actyx-adb",
-  "version": 1
+  "version": 2
 }
