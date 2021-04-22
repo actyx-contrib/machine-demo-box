@@ -72,7 +72,7 @@ init() {
     -e GF_AUTH_ANONYMOUS_ENABLED=true \
     -p 3000:3000 \
     --add-host="db:172.17.0.1" \
-    grafana/grafana:latest
+    grafana/grafana:7.5.4
   echo "... done." 
   echo "Open the dashboard at http://localhost:3000/d/actyx-adb/actyx-demo-box or log in at http://localhost:3000/login using admin/admin" 
 }
