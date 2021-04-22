@@ -107,4 +107,6 @@ while getopts $OPTSPEC option; do
     * ) echo "Unimplemented option: -$OPTARG" >&2; exit 1;;
   esac
 done
+if [ $OPTIND -eq 1 ]; then usage; exit 1; fi
+
 shift $((OPTIND - 1))
