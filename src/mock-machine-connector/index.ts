@@ -58,7 +58,7 @@ Pond.default().then((pond) => {
 
     const machineName = mkMachineName()
     console.log('emit temp:', machineName, 'temperature', temp)
-    em.valueEvent(machineName, 'temperature', temp)
+    em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], machineName, 'temperature', temp)
   }, 2_000)
 
   setInterval(() => {
@@ -69,11 +69,11 @@ Pond.default().then((pond) => {
       speed = Math.floor(speed * 1000) / 1000
 
       console.log('emit value:', machineName, 'speed', speed)
-      em.valueEvent(machineName, 'speed', speed)
+      em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], machineName, 'speed', speed)
     } else if (speed > 0) {
       speed = 0
       console.log('emit value:', machineName, 'speed', speed)
-      em.valueEvent(machineName, 'speed', speed)
+      em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], machineName, 'speed', speed)
     }
   }, 3_000)
 
@@ -84,7 +84,7 @@ Pond.default().then((pond) => {
       if (newState === State.ERROR) {
         const { errorCode, description } = getRandomError()
         console.log('emit error:', machineName, errorCode, description)
-        em.stateEvent(machineName, errorCode, description)
+        em.stateEvent(['Machine:{id}', 'Machine.state:{id}'], machineName, errorCode, description)
         em.generateError(
           ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
           machineName,
@@ -93,7 +93,7 @@ Pond.default().then((pond) => {
         )
       } else {
         console.log('emit state:', machineName, state, undefined)
-        em.stateEvent(machineName, state, undefined)
+        em.stateEvent(['Machine:{id}', 'Machine.state:{id}'], machineName, state, undefined)
       }
       state = newState
     }
