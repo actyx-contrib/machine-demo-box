@@ -1,11 +1,8 @@
-import { Client, OffsetMap, Ordering, Event, Subscription } from '@actyx/os-sdk'
 import { log } from './logger'
 import { appSettings } from './utils'
 import { dbInit, getOffsetMap, insertToDb } from './db'
 import { errorExport } from './eventExporter'
-
-const ax = Client()
-const es = ax.eventService
+import { OffsetMap, Pond, Tags } from '@actyx/pond'
 
 const defaultSettings = {
   db: {
@@ -22,62 +19,50 @@ const settings = appSettings(defaultSettings)
 const exitApp = () => process.exit(6)
 
 const main = async () => {
+  const pond = await Pond.default()
   log.info('init PostgreSQL connection')
   const pg = await dbInit(settings.db)
   log.info('PostgreSQL connected')
 
-  errorExport(pg)
+  errorExport(pond, pg)
 
-  const lowerBound = await getOffsetMap(pg)
+  let lowerBound = await getOffsetMap(pg)
 
   let queryActive = false
   const offsetIterator: OffsetMap = lowerBound
-  const subscriptions: Subscription[] = [
-    { streamSemantics: 'machine-state' },
-    { streamSemantics: 'machine-values' },
-  ]
 
-  const bulkInsert = async (lowerBound: OffsetMap) => {
-    let eventList: Array<Event> = []
+  const bulkInsert = async (lowerBound: OffsetMap): Promise<OffsetMap> => {
     queryActive = true
-
-    const current = await es.offsetsPromise()
-    es.query({
-      lowerBound,
-      upperBound: current,
-      ordering: Ordering.Lamport,
-      subscriptions,
-      onEvent: (event) => {
-        if (event.offset > (offsetIterator[event.stream.source] || 0)) {
-          offsetIterator[event.stream.source] = event.offset
-        }
-        eventList.push(event)
-        if (eventList.length > 100) {
-          insertToDb(pg, eventList, offsetIterator)
-          eventList = []
-        }
+    const newLowerBound = await pond.events().queryAllKnownChunked(
+      {
+        lowerBound,
+        order: 'Asc',
+        query: Tags('Machine-state', 'Machine.values'),
       },
-      onDone: async () => {
-        await insertToDb(pg, eventList, offsetIterator)
-        queryActive = false
+      100,
+      async (chunk) => {
+        await insertToDb(pg, chunk.events, chunk.upperBound)
       },
-      onError: () => {
-        queryActive = false
-      },
-    })
+    )
+    queryActive = false
+    return newLowerBound
   }
+
+  // trigger a new export after 5 Seconds
   setInterval(() => {
     if (queryActive === false) {
       log.debug('start next export run')
-      bulkInsert(offsetIterator).catch((e: unknown) => {
-        log.error(`restart app after an exception in bulkInsert`, e)
-        exitApp()
-      })
+      bulkInsert(offsetIterator)
+        .then((bound) => (lowerBound = bound))
+        .catch((e: unknown) => {
+          log.error(`restart app after an exception in bulkInsert`, e)
+          exitApp()
+        })
     } else {
       log.warn('blocked by backpressure')
     }
   }, 5000)
-  log.info('started')
+  log.info('DB-Exporter started')
 }
 main().catch((e: unknown) => {
   console.log(e)
