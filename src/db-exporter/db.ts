@@ -203,11 +203,11 @@ export const updateErrors = async (client: Client, errors: DbErrors): Promise<vo
     })
     .join(',')
 
-    console.log(errors)
-    await client.query(
+  await client
+    .query(
       `INSERT INTO public."t_error" ("id", "timestamp", "state", "device", "errorCode", "description", "openTimestamp", "acknowledgedTimestamp", "ignoredTimestamp")
        VALUES ${values}
-       ON CONFLICT (id) DO UPDATE SET 
+       ON CONFLICT (id) DO UPDATE SET
        state = excluded.state,
        description = excluded.description,
        "openTimestamp" = excluded."openTimestamp",

@@ -13,13 +13,13 @@ const getNewState = (state: State): State => {
   switch (state) {
     case State.IDLE: {
       if (Math.random() > 0.25) {
-        return Math.random() > 0.75 ? State.ERROR : State.RUNNING
+        return Math.random() > 0.85 ? State.ERROR : State.RUNNING
       }
       return state
     }
     case State.RUNNING: {
-      if (Math.random() > 0.5) {
-        return Math.random() > 0.5 ? State.ERROR : State.IDLE
+      if (Math.random() > 0.8) {
+        return Math.random() > 0.8 ? State.ERROR : State.IDLE
       }
       return state
     }
