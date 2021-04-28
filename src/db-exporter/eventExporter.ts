@@ -54,8 +54,7 @@ const translateToDbErrors = (state: State): DbError => {
   }
 }
 
-export const errorExport = async (pg: Client): Promise<void> => {
-  const pond = await Pond.default()
+export const errorExport = async (pond: Pond, pg: Client): Promise<void> => {
   observeRegistry(pond, ErrorFish.registry(), Object.keys, ErrorFish.of, (errors) => {
     updateErrors(
       pg,
