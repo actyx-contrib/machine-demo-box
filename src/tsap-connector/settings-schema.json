@@ -52,6 +52,22 @@
       "minimum": 100,
       "maximum": 30000
     },
+    "bdeTags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9.]*(\\:\\{id\\}){0,1}$"
+      },
+      "minItems": 1
+    },
+    "valuesTags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9.]*(\\:\\{id\\}){0,1}$"
+      },
+      "minItems": 1
+    },
     "errorTag": {
       "type": "array",
       "items": {
@@ -131,6 +147,8 @@
       "timeout": 8000
     },
     "pollInterval": 500,
+    "bdeTags": ["Machine:{id}", "Machine-state:{id}"],
+    "valuesTags": ["Machine.values:{id}"],
     "errorTag": ["Machine:{id}", "MachineError:{uuid}"],
     "bdeVariables": {
       "address": "IB0",
