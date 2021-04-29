@@ -1,7 +1,7 @@
 import { Pond } from '@actyx/pond'
 import { mkEmitter } from '../tsap-connector/emitter'
 
-const mkMachineName = () => 'mock machine ' + Math.floor(Math.random() * 3 + 1)
+const machines = ['mock machine 1', 'mock machine 2', 'mock machine 3']
 
 enum State {
   IDLE,
@@ -18,8 +18,8 @@ const getNewState = (state: State): State => {
       return state
     }
     case State.RUNNING: {
-      if (Math.random() > 0.8) {
-        return Math.random() > 0.8 ? State.ERROR : State.IDLE
+      if (Math.random() > 0.93) {
+        return Math.random() > 0.6 ? State.ERROR : State.IDLE
       }
       return state
     }
@@ -47,55 +47,63 @@ const getRandomError = (): RandomError => {
 Pond.default().then((pond) => {
   const em = mkEmitter(pond)
 
-  let temp = 30
-  let speed = 1
-  let state = State.IDLE
+  machines.forEach((name) => {
+    let lastTemp = 30
+    let lastSpeed = 1
+    let lastState = State.IDLE
 
-  setInterval(() => {
-    temp += Math.random() - (state === State.RUNNING ? 0.5 : 1.0)
-    temp = Math.max(25, Math.min(55, temp))
-    temp = Math.floor(temp * 1000) / 1000
+    setInterval(() => {
+      let currentTemp = lastTemp
 
-    const machineName = mkMachineName()
-    console.log('emit temp:', machineName, 'temperature', temp)
-    em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], machineName, 'temperature', temp)
-  }, 2_000)
+      currentTemp += (Math.random() - (lastState === State.RUNNING ? 0.5 : 1.0)) * 0.1
+      currentTemp = Math.max(25, Math.min(55, currentTemp))
+      currentTemp = Math.floor(currentTemp * 1000) / 1000
 
-  setInterval(() => {
-    const machineName = mkMachineName()
-    if (state === State.RUNNING) {
-      speed += (Math.random() - 0.5) * 0.1
-      speed = Math.max(0.2, Math.min(1.8, speed))
-      speed = Math.floor(speed * 1000) / 1000
-
-      console.log('emit value:', machineName, 'speed', speed)
-      em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], machineName, 'speed', speed)
-    } else if (speed > 0) {
-      speed = 0
-      console.log('emit value:', machineName, 'speed', speed)
-      em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], machineName, 'speed', speed)
-    }
-  }, 3_000)
-
-  setInterval(() => {
-    const newState = getNewState(state)
-    if (newState !== state) {
-      const machineName = mkMachineName()
-      if (newState === State.ERROR) {
-        const { errorCode, description } = getRandomError()
-        console.log('emit error:', machineName, errorCode, description)
-        em.stateEvent(['Machine:{id}', 'Machine.state:{id}'], machineName, errorCode, description)
-        em.generateError(
-          ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
-          machineName,
-          errorCode,
-          description,
-        )
-      } else {
-        console.log('emit state:', machineName, state, undefined)
-        em.stateEvent(['Machine:{id}', 'Machine.state:{id}'], machineName, state, undefined)
+      if (lastTemp !== currentTemp) {
+        console.log('emit temp:', name, 'temperature', currentTemp)
+        em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], name, 'temperature', currentTemp)
+        lastTemp = currentTemp
       }
-      state = newState
-    }
-  }, 5_000)
+    }, 2_500)
+
+    setInterval(() => {
+      let machineSpeed = lastSpeed
+      if (lastState === State.RUNNING) {
+        machineSpeed += (Math.random() - 0.5) * 0.1
+        machineSpeed = Math.max(0.2, Math.min(1.8, machineSpeed))
+        machineSpeed = Math.floor(machineSpeed * 1000) / 1000
+
+        if (lastSpeed !== machineSpeed) {
+          console.log('emit value:', name, 'speed', machineSpeed)
+          em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], name, 'speed', machineSpeed)
+        }
+      } else if (machineSpeed > 0) {
+        machineSpeed = 0
+        console.log('emit value:', name, 'speed', machineSpeed)
+        em.valueEvent(['Machine:{id}', 'Machine.values:{id}'], name, 'speed', machineSpeed)
+      }
+      lastSpeed = machineSpeed
+    }, 4_000)
+
+    setInterval(() => {
+      const newState = getNewState(lastState)
+      if (newState !== lastState) {
+        if (newState === State.ERROR) {
+          const { errorCode, description } = getRandomError()
+          console.log('emit error:', name, errorCode, description)
+          em.stateEvent(['Machine:{id}', 'Machine.state:{id}'], name, errorCode, description)
+          em.generateError(
+            ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
+            name,
+            errorCode,
+            description,
+          )
+        } else {
+          console.log('emit state:', name, lastState, undefined)
+          em.stateEvent(['Machine:{id}', 'Machine.state:{id}'], name, lastState, undefined)
+        }
+        lastState = newState
+      }
+    }, 10_000)
+  })
 })
