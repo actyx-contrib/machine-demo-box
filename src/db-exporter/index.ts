@@ -2,7 +2,7 @@ import { log } from './logger'
 import { appSettings } from './utils'
 import { dbInit, getOffsetMap, insertToDb } from './db'
 import { errorExport } from './eventExporter'
-import { OffsetMap, Pond, Tags } from '@actyx/pond'
+import { OffsetMap, Pond, Tag } from '@actyx/pond'
 
 const defaultSettings = {
   db: {
@@ -29,7 +29,6 @@ const main = async () => {
   let lowerBound = await getOffsetMap(pg)
 
   let queryActive = false
-  const offsetIterator: OffsetMap = lowerBound
 
   const bulkInsert = async (lowerBound: OffsetMap): Promise<OffsetMap> => {
     queryActive = true
@@ -37,10 +36,11 @@ const main = async () => {
       {
         lowerBound,
         order: 'Asc',
-        query: Tags('Machine-state', 'Machine.values'),
+        query: Tag('Machine.state').or(Tag('Machine.values')),
       },
       100,
       async (chunk) => {
+        log.info('add events:', { lng: chunk.events.length })
         await insertToDb(pg, chunk.events, chunk.upperBound)
       },
     )
@@ -51,8 +51,8 @@ const main = async () => {
   // trigger a new export after 5 Seconds
   setInterval(() => {
     if (queryActive === false) {
-      log.debug('start next export run')
-      bulkInsert(offsetIterator)
+      log.debug('start next export run', { lowerBound })
+      bulkInsert(lowerBound)
         .then((bound) => (lowerBound = bound))
         .catch((e: unknown) => {
           log.error(`restart app after an exception in bulkInsert`, e)

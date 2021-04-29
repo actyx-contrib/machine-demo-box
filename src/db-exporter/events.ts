@@ -17,9 +17,7 @@ export type StateChangedEvents = StateChangedEvent[]
 
 export const isStateChangedEvent = (
   event: ActyxEvent<unknown>,
-): event is ActyxEvent<StateChangedEvent> => {
-  return isRight(stateChangedEvent.decode(event.payload))
-}
+): event is ActyxEvent<StateChangedEvent> => isRight(stateChangedEvent.decode(event.payload))
 
 export const valueChangedEvent = t.type({
   eventType: t.literal('value_changed'),
