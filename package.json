@@ -29,7 +29,10 @@
     "node:mock-machine-connector:build": "tsc src/mock-machine-connector/index.ts --outDir build/mock-machine-connector --esModuleInterop --skipLibCheck",
     "node:mock-machine-connector:docker:build": "npm run node:mock-machine-connector:build && docker build -t mock-machine-connector -f src/mock-machine-connector/Dockerfile .",
     "node:mock-machine-connector:docker:build-aarch64": "npm run node:mock-machine-connector:build && docker buildx build --platform linux/arm64 -t mock-machine-connector-aarch64 -f src/mock-machine-connector/Dockerfile --load .",
-    "node:mock-machine-connector:package": "ax apps package src/mock-machine-connector/ax-manifest.yml"
+    "node:mock-machine-connector:package": "ax apps package src/mock-machine-connector/ax-manifest.yml",
+    "node:opcua-mock-plc:start": "nodemon --watch src/opcua-mock-plc --exec ts-node src/opcua-mock-plc/index.ts",
+    "node:opcua-mock-plc:build": "tsc src/opcua-mock-plc/index.ts --outDir build/opcua-mock-plc --esModuleInterop --skipLibCheck",
+    "node:opcua-mock-plc:docker:build": "npm run node:opcua-mock-plc:build && docker build -t opcua-mock-plc -f src/opcua-mock-plc/Dockerfile ."
   },
   "keywords": [],
   "author": "",
@@ -72,6 +75,7 @@
     "ajv": "^6.12.6",
     "fp-ts": "^2.1.0",
     "io-ts": "^2.2.14",
+    "node-opcua": "^2.41.1",
     "nodes7": "^0.3.12",
     "pg": "^8.5.1",
     "react": "^16",
