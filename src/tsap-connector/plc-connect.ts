@@ -63,7 +63,12 @@ export const readValues = (
 
       if (newState) {
         const [stateDesc, state] = newState
-        mkEmitter(actyx).stateEvent(settings.machineName, state.bdeState, stateDesc)
+        mkEmitter(actyx).stateEvent(
+          settings.bdeTags,
+          settings.machineName,
+          state.bdeState,
+          stateDesc,
+        )
         if (state.generateError) {
           mkEmitter(actyx).generateError(
             settings.errorTag,
@@ -73,7 +78,7 @@ export const readValues = (
           )
         }
       } else if (settings.bdeVariables.publishUnknownState) {
-        mkEmitter(actyx).stateEvent(settings.machineName, 1000, 'Unknown')
+        mkEmitter(actyx).stateEvent(settings.bdeTags, settings.machineName, 1000, 'Unknown')
       } else {
         log.debug('ignore new BDE state: ', { lastBde, bde })
       }
@@ -83,7 +88,7 @@ export const readValues = (
     analogValueKeys.forEach((key) => {
       const value = analog[key]
       if (value && value !== lastAnalog[key]) {
-        mkEmitter(actyx).valueEvent(settings.machineName, key, value)
+        mkEmitter(actyx).valueEvent(settings.valuesTags, settings.machineName, key, value)
         lastAnalog[key] = value
       }
     })

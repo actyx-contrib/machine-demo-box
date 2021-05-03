@@ -1,14 +1,13 @@
 import { Settings } from './index'
 import { log } from './logger'
 import { Client } from 'pg'
-import { OffsetMap, Event } from '@actyx/os-sdk'
 import {
   isStateChangedEvent,
   isValueChangedEvent,
   StateChangedEvent,
-  TypedEvent,
   ValueChangedEvent,
 } from './events'
+import { ActyxEvent, Metadata, OffsetMap } from '@actyx/pond'
 
 export const dbInit = async (settings: Settings['db']): Promise<Client> => {
   const { host, port, database, password, user } = settings
@@ -106,15 +105,15 @@ export const getOffsetMap = async (client: Client): Promise<OffsetMap> => {
 
 export const insertToDb = async (
   pg: Client,
-  eventList: Array<Event>,
+  eventChunk: ActyxEvent<unknown>[],
   lowerBound: OffsetMap,
 ): Promise<void> => {
-  await insertStateEvent(pg, eventList.filter(isStateChangedEvent))
-  await insertValueEvent(pg, eventList.filter(isValueChangedEvent))
+  await insertStateEvent(pg, eventChunk.filter(isStateChangedEvent))
+  await insertValueEvent(pg, eventChunk.filter(isValueChangedEvent))
   await updateOffsetMap(pg, lowerBound)
 }
 
-const mkId = (event: Event) => String(event.lamport).padStart(12, '0') + event.stream.source
+const mkId = (meta: Metadata) => meta.eventId.padStart(24, '0')
 
 export const updateOffsetMap = async (client: Client, offsetMap: OffsetMap): Promise<void> => {
   console.log('OffsetMap: ' + JSON.stringify(offsetMap))
@@ -128,16 +127,16 @@ export const updateOffsetMap = async (client: Client, offsetMap: OffsetMap): Pro
 
 export const insertStateEvent = async (
   client: Client,
-  events: ReadonlyArray<TypedEvent<StateChangedEvent>>,
+  events: ReadonlyArray<ActyxEvent<StateChangedEvent>>,
 ): Promise<void> => {
   if (events.length === 0) {
     return
   }
   const values = events
-    .map((event) => {
-      return `('${mkId(event)}', TO_TIMESTAMP(${Math.floor(event.timestamp / 1e6)}), '${
-        event.lamport
-      }', '${event.payload.device}', '${event.payload.state}', '${event.payload.stateDesc || ' '}')`
+    .map(({ payload, meta }) => {
+      return `('${mkId(meta)}', TO_TIMESTAMP(${Math.floor(meta.timestampMicros / 1e6)}), '${
+        meta.lamport
+      }', '${payload.device}', '${payload.state}', '${payload.stateDesc || ' '}')`
     })
     .join(',')
 
@@ -152,16 +151,16 @@ export const insertStateEvent = async (
 
 export const insertValueEvent = async (
   client: Client,
-  events: ReadonlyArray<TypedEvent<ValueChangedEvent>>,
+  events: ReadonlyArray<ActyxEvent<ValueChangedEvent>>,
 ): Promise<void> => {
   if (events.length === 0) {
     return
   }
   const values = events
-    .map((event) => {
-      return `('${mkId(event)}', TO_TIMESTAMP(${Math.floor(event.timestamp / 1e6)}), '${
-        event.lamport
-      }', '${event.payload.device}', '${event.payload.name}', '${event.payload.value}')`
+    .map(({ payload, meta }) => {
+      return `('${mkId(meta)}', TO_TIMESTAMP(${Math.floor(meta.timestampMicros / 1e6)}), '${
+        meta.lamport
+      }', '${payload.device}', '${payload.name}', '${payload.value}')`
     })
     .join(',')
 

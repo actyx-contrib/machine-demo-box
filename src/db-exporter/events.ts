@@ -1,10 +1,6 @@
 import * as t from 'io-ts'
-import { Event } from '@actyx/os-sdk'
 import { isRight } from 'fp-ts/lib/Either'
-
-export type TypedEvent<T> = Event & {
-  payload: T
-}
+import { ActyxEvent } from '@actyx/pond'
 
 export const stateChangedEvent = t.intersection([
   t.type({
@@ -19,9 +15,9 @@ export const stateChangedEvent = t.intersection([
 export type StateChangedEvent = t.TypeOf<typeof stateChangedEvent>
 export type StateChangedEvents = StateChangedEvent[]
 
-export const isStateChangedEvent = (event: Event): event is TypedEvent<StateChangedEvent> => {
-  return isRight(stateChangedEvent.decode(event.payload))
-}
+export const isStateChangedEvent = (
+  event: ActyxEvent<unknown>,
+): event is ActyxEvent<StateChangedEvent> => isRight(stateChangedEvent.decode(event.payload))
 
 export const valueChangedEvent = t.type({
   eventType: t.literal('value_changed'),
@@ -32,5 +28,6 @@ export const valueChangedEvent = t.type({
 export type ValueChangedEvent = t.TypeOf<typeof valueChangedEvent>
 export type ValueChangedEvents = ValueChangedEvent[]
 
-export const isValueChangedEvent = (event: Event): event is TypedEvent<ValueChangedEvent> =>
-  isRight(valueChangedEvent.decode(event.payload))
+export const isValueChangedEvent = (
+  event: ActyxEvent<unknown>,
+): event is ActyxEvent<ValueChangedEvent> => isRight(valueChangedEvent.decode(event.payload))
