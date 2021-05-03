@@ -25,7 +25,7 @@ const getNewState = (state: State): State => {
     }
     case State.ERROR: {
       if (Math.random() > 0.75) {
-        return Math.random() > 0.8 ? State.IDLE : State.ERROR
+        return Math.random() > 0.8 ? State.RUNNING : State.IDLE
       }
       return state
     }
