@@ -75,5 +75,24 @@ const publishEvents = (_emitState: EmitStateHandler, _emitError: EmitErrorHandle
 
 const notUndefined = <T>(v: T | undefined): v is T => v !== undefined
 
+const renderDescription = ({ values, rule, name }: OdaEventSource): OdaEvent => {
+  if (rule.odaDescription) {
+    const stateDesc = Object.entries(values).reduce(
+      (acc, [name, value]) => replaceAll(acc, `{${name}}`, value),
+      rule.odaDescription,
+    )
+
+    return {
+      state: rule.odaState,
+      stateDesc,
+    }
+  } else {
+    return {
+      state: rule.odaState,
+      stateDesc: name,
+    }
+  }
+}
+
 export const replaceAll = (text: string, placeholder: string, value: any): string =>
   text.replace(new RegExp(placeholder, 'g'), `${value}`)
