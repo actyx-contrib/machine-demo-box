@@ -8,7 +8,16 @@ import { executeValueEmitter } from './values'
 
 Pond.default().then(async (pond) => {
   // read settings
-  const { machineName, opcua, variables, values, valuesTags, rules } = getSettings()
+  const {
+    machineName,
+    opcua,
+    variables,
+    values,
+    valuesTags,
+    odaTags,
+    errorTag,
+    rules,
+  } = getSettings()
 
   // init OPCUA connection and open new session
   const client = OPCUAClient.create(opcuaSettings)
@@ -42,11 +51,13 @@ Pond.default().then(async (pond) => {
   executeOdaRules(
     streams,
     rules,
-    (state: string, description: number) => {
+    (state: number, description: string | undefined) => {
+      em.stateEvent(odaTags, machineName, state, description)
       console.log(state, description)
     },
-    (id: string, state: string, description: number) => {
-      console.log(id, state, description)
+    (id: string, error: number, description: string | undefined) => {
+      console.log(id, error, description)
+      em.generateError(errorTag, machineName, error, description)
     },
   )
 
