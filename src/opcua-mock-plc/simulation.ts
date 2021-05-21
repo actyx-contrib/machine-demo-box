@@ -51,7 +51,7 @@ export const simulateMachine = (device: UAObject, namespace: Namespace): (() => 
           break
         }
         case State.RUNNING: {
-          if (Math.random() > 0.93) {
+          if (Math.random() > 0.8) {
             state = Math.random() > 0.6 ? State.ERROR : State.IDLE
             if (state === State.ERROR) {
               error = Math.floor(Math.random() * 20)

@@ -29,7 +29,7 @@ export const executeValueEmitter = (
           map((v) => v.value),
           map(toValue(settings)),
           distinctUntilChanged((prev, cur) => settings.distinct && prev === cur),
-          tap((v) => emit(name, v)),
+          tap((v) => emit(settings.name, v)),
         )
         .subscribe()
     }
