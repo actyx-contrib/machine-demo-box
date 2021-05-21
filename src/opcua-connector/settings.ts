@@ -9,6 +9,15 @@ type Rule = {
 }
 type Rules = Record<string, Rule>
 
+type Value = {
+  name: string
+  template?: string
+  type: 'number' | 'string'
+  decimal: number
+  distinct: boolean
+}
+type Values = Record<string, Value>
+
 const defaultSetting = {
   machineName: 'Machine 1',
   opcua: {
@@ -26,6 +35,21 @@ const defaultSetting = {
     error: { nodeId: 'ns=1;s="error"', poolRate: 100 },
     errorDesc: { nodeId: 'ns=1;s="errorDescription"', poolRate: 100 },
   },
+  values: {
+    speed: {
+      name: 'speed',
+      type: 'number',
+      decimal: 1,
+      distinct: true,
+    },
+    temp: {
+      name: 'temp',
+      template: '{temp}C°',
+      type: 'number',
+      decimal: 0,
+      distinct: true,
+    },
+  } as Values,
   rules: {
     On: {
       bdeState: 1,
