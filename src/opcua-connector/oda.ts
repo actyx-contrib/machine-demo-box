@@ -5,13 +5,16 @@ import { distinctUntilChanged, tap } from 'rxjs/operators'
 import { OpcuaStreams, Rule, Rules, VariableStream, VariableStreamData } from './types'
 // import * as uuid from 'uuid'
 // import { tap } from 'rxjs/operators'
-
 type OdaEvent = {
-  state: string
-  stateDesc: string
-  generateError: boolean
+  state: number
+  stateDesc?: string
 }
-type OdaEvents = Array<OdaEvent>
+type OdaEventSource = {
+  values: VariableStreamData
+  name: string
+  rule: Rule
+}
+type OdaEventSources = Array<OdaEventSource>
 type EmitStateHandler = (state: string, description: number) => void
 type EmitErrorHandler = (id: string, state: string, description: number) => void
 
@@ -25,6 +28,7 @@ export const executeOdaRules = (
     .pipe(
       map<VariableStream, VariableStreamData>(toValues),
       map((values) => Object.entries(rules).map(validateRule(values)).filter(notUndefined)),
+      map((events) => events.map(renderDescription)),
       distinctUntilChanged(deepEqual),
       tap(publishEvents(emitState, emitError)),
     )
@@ -37,8 +41,8 @@ const toValues = (values: VariableStream): VariableStreamData =>
     {},
   ) as VariableStreamData
 
-const validateRule = (values: VariableStream) => ([name, rule]: [string, Rule]):
-  | OdaEvent
+const validateRule = (values: VariableStreamData) => ([name, rule]: [string, Rule]):
+  | OdaEventSource
   | undefined => {
   const vars = Object.entries(values).reduce(
     (acc, [name, value]) =>
@@ -51,10 +55,10 @@ const validateRule = (values: VariableStream) => ([name, rule]: [string, Rule]):
     // console.log(name, expression, res)
     if (res === true) {
       return {
-        state: name,
-        stateDesc: 'a',
-        generateError: rule.generateError,
-      } as OdaEvent
+        name,
+        values,
+        rule,
+      } as OdaEventSource
     }
     return undefined
   } catch (e) {
@@ -64,7 +68,7 @@ const validateRule = (values: VariableStream) => ([name, rule]: [string, Rule]):
 }
 
 const publishEvents = (_emitState: EmitStateHandler, _emitError: EmitErrorHandler) => (
-  events: OdaEvents,
+  events: OdaEventSources,
 ) => {
   console.log(events)
 }
