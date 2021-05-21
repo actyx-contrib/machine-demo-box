@@ -11,6 +11,8 @@ export const simulateMachine = (device: UAObject, namespace: Namespace): (() => 
   let state = State.IDLE
   let speed = 0
   let temp = 20
+  let error = 0
+  let errorDescription = ''
 
   const inters: NodeJS.Timeout[] = []
   // simulate PLC behavior
@@ -41,18 +43,28 @@ export const simulateMachine = (device: UAObject, namespace: Namespace): (() => 
         case State.IDLE: {
           if (Math.random() > 0.25) {
             state = Math.random() > 0.95 ? State.ERROR : State.RUNNING
+            if (state === State.ERROR) {
+              error = Math.floor(Math.random() * 20)
+              errorDescription = `Some random description ${Math.floor(Math.random() * 100)}`
+            }
           }
           break
         }
         case State.RUNNING: {
           if (Math.random() > 0.93) {
             state = Math.random() > 0.6 ? State.ERROR : State.IDLE
+            if (state === State.ERROR) {
+              error = Math.floor(Math.random() * 20)
+              errorDescription = `Some random description ${Math.floor(Math.random() * 100)}`
+            }
           }
           break
         }
         case State.ERROR: {
           if (Math.random() > 0.66) {
             state = Math.random() > 0.8 ? State.RUNNING : State.IDLE
+            error = 0
+            errorDescription = ''
           }
           break
         }
@@ -69,6 +81,28 @@ export const simulateMachine = (device: UAObject, namespace: Namespace): (() => 
     value: {
       get: () => {
         return new Variant({ dataType: DataType.Int16, value: state })
+      },
+    },
+  })
+  namespace.addVariable({
+    componentOf: device,
+    browseName: 'Error Code',
+    dataType: 'Int16',
+    nodeId: 'ns=1;s="error"',
+    value: {
+      get: () => {
+        return new Variant({ dataType: DataType.Int16, value: error })
+      },
+    },
+  })
+  namespace.addVariable({
+    componentOf: device,
+    browseName: 'Error Description',
+    dataType: 'String',
+    nodeId: 'ns=1;s="errorDescription"',
+    value: {
+      get: () => {
+        return new Variant({ dataType: DataType.String, value: errorDescription })
       },
     },
   })
