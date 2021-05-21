@@ -1,9 +1,6 @@
-import { Client } from '@actyx/os-sdk'
 import { StateChangedEvent, ValueChangedEvent } from '../db-exporter/events'
 import { Pond, Tag, Tags } from '@actyx/pond'
 import * as uuid from 'uuid'
-
-export const es = Client().eventService
 
 export const renderTag = (machineName: string, errorId: string) => (
   rawTag: string,

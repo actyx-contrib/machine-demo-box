@@ -4,6 +4,10 @@
   "main": "machine-connector/index.js",
   "license": "ISC",
   "dependencies": {
-    "@actyx/pond": "2"
+    "@actyx/pond": "2",
+    "@actyx/os-sdk": "^0.3.1",
+    "uuid": "^8.3.2",
+    "nodes7": "^0.3.12",
+    "ajv": "^6.12.6"
   }
 }
