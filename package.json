@@ -71,12 +71,12 @@
     "pondVersion": 2
   },
   "dependencies": {
-    "@actyx-contrib/react-pond": "^2.0.2",
-    "@actyx-contrib/registry": "^2.0.2",
-    "@actyx-contrib/rx-pond": "^0.2.0",
+    "@actyx-contrib/react-pond": "^2.1.0",
+    "@actyx-contrib/registry": "^2.1.0",
+    "@actyx-contrib/rx-pond": "^0.3.1",
     "@actyx/industrial-ui": "^1.0.5",
     "@actyx/os-sdk": "^0.3.1",
-    "@actyx/pond": "^2.4.1",
+    "@actyx/pond": "^2.7.0",
     "ajv": "^6.12.6",
     "fp-ts": "^2.1.0",
     "io-ts": "^2.2.14",
@@ -86,7 +86,7 @@
     "react": "^16",
     "react-dom": "^16",
     "recompose": "0.30.0",
-    "rxjs": "^6.6.6",
+    "rxjs": "^7.0.1",
     "uuid": "^8.3.2"
   }
 }
