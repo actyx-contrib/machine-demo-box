@@ -16,7 +16,7 @@ export const renderTag = (machineName: string, errorId: string) => (
 export const renderTags = (tags: string[], machineName: string, errorId: string): Tags<unknown> =>
   tags.map(renderTag(machineName, errorId)).reduce((acc, tag) => acc.and(tag), Tags())
 
-type Emitter = {
+export type Emitter = {
   actyx: Pond
   stateEvent: (
     tagArray: Array<string>,

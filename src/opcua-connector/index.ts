@@ -32,6 +32,7 @@ Pond.default().then(async (pond) => {
   // subscribe to values and emit them to actyx
   const { streams, subscriptions } = await mkStreams(variables, session)
 
+  combineLatest(streams).subscribe(executeRules(em))
 
   // terminate app in a kind way for the opcua server
 
@@ -43,6 +44,9 @@ Pond.default().then(async (pond) => {
   })
 })
 
+const executeRules = (_em: Emitter) => (data: VariableStream) => {
+  console.log(data)
+}
 
 type mkStreamsReturn = { subscriptions: ClientSubscription[]; streams: OpcuaStreams }
 
