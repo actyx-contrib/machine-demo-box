@@ -1,0 +1,10 @@
+{
+  "name": "opcua-connector",
+  "version": "1.0.0",
+  "main": "opcua-connector/index.js",
+  "license": "ISC",
+  "dependencies": {
+    "@actyx/pond": "2",
+    "node-opcua": "^2.41.1"
+  }
+}
