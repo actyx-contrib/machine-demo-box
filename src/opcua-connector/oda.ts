@@ -3,20 +3,24 @@ import { combineLatest } from 'rxjs'
 import { map } from 'rxjs/internal/operators/map'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
 import { OpcuaStreams, Rule, Rules, VariableStream, VariableStreamData } from './types'
-// import * as uuid from 'uuid'
+import * as uuid from 'uuid'
 // import { tap } from 'rxjs/operators'
+
 type OdaEvent = {
   state: number
   stateDesc?: string
+  generateError: boolean
 }
+type OdaEvents = Array<OdaEvent>
+
 type OdaEventSource = {
   values: VariableStreamData
   name: string
   rule: Rule
 }
-type OdaEventSources = Array<OdaEventSource>
-type EmitStateHandler = (state: string, description: number) => void
-type EmitErrorHandler = (id: string, state: string, description: number) => void
+
+type EmitStateHandler = (state: number, description: string | undefined) => void
+type EmitErrorHandler = (id: string, error: number, description: string | undefined) => void
 
 export const executeOdaRules = (
   streams: OpcuaStreams,
@@ -67,11 +71,15 @@ const validateRule = (values: VariableStreamData) => ([name, rule]: [string, Rul
   }
 }
 
-const publishEvents = (_emitState: EmitStateHandler, _emitError: EmitErrorHandler) => (
-  events: OdaEventSources,
-) => {
-  console.log(events)
-}
+const publishEvents = (emitState: EmitStateHandler, emitError: EmitErrorHandler) => (
+  events: OdaEvents,
+) =>
+  events.forEach((event) => {
+    if (event.generateError) {
+      emitError(uuid.v4(), event.state, event.stateDesc)
+    }
+    emitState(event.state, event.stateDesc)
+  })
 
 const notUndefined = <T>(v: T | undefined): v is T => v !== undefined
 
@@ -85,11 +93,13 @@ const renderDescription = ({ values, rule, name }: OdaEventSource): OdaEvent => 
     return {
       state: rule.odaState,
       stateDesc,
+      generateError: rule.generateError || false,
     }
   } else {
     return {
       state: rule.odaState,
       stateDesc: name,
+      generateError: rule.generateError || false,
     }
   }
 }
