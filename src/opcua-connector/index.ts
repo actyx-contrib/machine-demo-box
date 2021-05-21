@@ -1,11 +1,19 @@
 import { Pond } from '@actyx/pond'
-import { OPCUAClient, ClientSubscription, UserTokenType } from 'node-opcua'
-import { mkEmitter } from './emitter'
+import { OPCUAClient, ClientSubscription, UserTokenType, Variant, ClientSession } from 'node-opcua'
+import { Observable } from 'rxjs'
+import { combineLatest } from 'rxjs/internal/observable/combineLatest'
+import { Emitter, mkEmitter } from './emitter'
 import { subscribeValue } from './opcua'
-import { getSettings, opcuaSettings } from './settings'
+import { getSettings, opcuaSettings, Settings } from './settings'
+
+type Variables = Settings['variables']
+type VariableNames = keyof Variables
+type VariableStream = Record<VariableNames, Variant>
+
+type OpcuaStreams = Record<VariableNames, Observable<Variant>>
 
 Pond.default().then(async (pond) => {
-  const { machineName, opcua, bdeTags, valuesTags, analogVariables } = getSettings()
+  const { machineName, opcua, bdeTags, valuesTags, variables } = getSettings()
   const client = OPCUAClient.create(opcuaSettings)
   await client.connect(opcua.opcuaUrl)
   const session = await client.createSession({
@@ -21,33 +29,35 @@ Pond.default().then(async (pond) => {
   })
 
   const em = mkEmitter(pond)
-
   // subscribe to values and emit them to actyx
+  const { streams, subscriptions } = await mkStreams(variables, session)
 
-  const subs: ClientSubscription[] = []
-
-  const [stateSub, stateValue] = await subscribeValue(session, 'ns=1;s="state"', 100)
-  subs.push(stateSub)
-  stateValue.on('changed', (value) => {
-    em.stateEvent(bdeTags, machineName, value.value.value)
-    console.log('state', value.value.value)
-  })
-
-  Object.entries(analogVariables).forEach(async ([name, { nodeId }]) => {
-    const [sub, value] = await subscribeValue(session, nodeId, 1000)
-    subs.push(sub)
-    value.on('changed', (value) => {
-      console.log(name, value.value.value)
-      em.valueEvent(valuesTags, machineName, name, +value.value.value)
-    })
-  })
 
   // terminate app in a kind way for the opcua server
 
   process.on('SIGINT', async () => {
-    subs.forEach((sub) => sub.terminate())
+    subscriptions.forEach((sub) => sub.terminate())
     session.close()
     await client.disconnect()
     console.log('terminated')
   })
 })
+
+
+type mkStreamsReturn = { subscriptions: ClientSubscription[]; streams: OpcuaStreams }
+
+async function mkStreams(variables: Variables, session: ClientSession): Promise<mkStreamsReturn> {
+  const subscriptions: ClientSubscription[] = []
+  const streamsAcc: Partial<OpcuaStreams> = {}
+  let varName: keyof Settings['variables']
+  for (varName in variables) {
+    const { nodeId, poolRate } = variables[varName]
+    const [sub, stream] = await subscribeValue(session, nodeId, poolRate)
+    subscriptions.push(sub)
+    streamsAcc[varName] = stream
+  }
+  return {
+    streams: streamsAcc as Required<typeof streamsAcc>,
+    subscriptions,
+  }
+}
