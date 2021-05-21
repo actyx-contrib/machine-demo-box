@@ -1,31 +1,14 @@
 import { OPCUAClientOptions, MessageSecurityMode, SecurityPolicy } from 'node-opcua'
+import { Rules, Settings, Values } from './types'
 
-type Rule = {
-  bdeState: number
-  bdeDescriptionFromPlc?: string
-  bdeDescriptionFixed?: string
-  rule: string
-  generateError?: boolean
-}
-type Rules = Record<string, Rule>
-
-type Value = {
-  name: string
-  template?: string
-  type: 'number' | 'string'
-  decimal: number
-  distinct: boolean
-}
-type Values = Record<string, Value>
-
-const defaultSetting = {
+export const defaultSetting = {
   machineName: 'Machine 1',
   opcua: {
     opcuaUrl: 'opc.tcp://localhost:4434/UA/actyx/',
     userName: 'actyx',
     password: 'actyx',
   },
-  bdeTags: ['Machine:{id}', 'Machine.state:{id}'],
+  odaTags: ['Machine:{id}', 'Machine.state:{id}'],
   valuesTags: ['Machine:{id}', 'Machine.values:{id}'],
   errorTag: ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
   variables: {
@@ -38,14 +21,12 @@ const defaultSetting = {
   values: {
     speed: {
       name: 'speed',
-      type: 'number',
       decimal: 1,
       distinct: true,
     },
     temp: {
       name: 'temp',
-      template: '{temp}C°',
-      type: 'number',
+      template: '{value}C°',
       decimal: 0,
       distinct: true,
     },
@@ -105,7 +86,6 @@ export const appSettings = <S>(defaultSettings: S): S => {
   return defaultSettings
 }
 
-export type Settings = typeof defaultSetting
 export const getSettings = (): Settings => appSettings(defaultSetting)
 
 export const opcuaSettings: OPCUAClientOptions = {

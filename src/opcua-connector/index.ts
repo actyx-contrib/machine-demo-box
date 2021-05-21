@@ -1,19 +1,14 @@
 import { Pond } from '@actyx/pond'
-import { OPCUAClient, ClientSubscription, UserTokenType, Variant, ClientSession } from 'node-opcua'
-import { Observable } from 'rxjs'
+import { OPCUAClient, UserTokenType } from 'node-opcua'
 import { combineLatest } from 'rxjs/internal/observable/combineLatest'
 import { Emitter, mkEmitter } from './emitter'
-import { subscribeValue } from './opcua'
-import { getSettings, opcuaSettings, Settings } from './settings'
-
-type Variables = Settings['variables']
-type VariableNames = keyof Variables
-type VariableStream = Record<VariableNames, Variant>
-
-type OpcuaStreams = Record<VariableNames, Observable<Variant>>
+import { getSettings, opcuaSettings } from './settings'
+import { mkStreams } from './streams'
+import { VariableStream } from './types'
+import { executeValueEmitter } from './values'
 
 Pond.default().then(async (pond) => {
-  const { machineName, opcua, bdeTags, valuesTags, variables } = getSettings()
+  const { machineName, opcua, variables, values, valuesTags } = getSettings()
   const client = OPCUAClient.create(opcuaSettings)
   await client.connect(opcua.opcuaUrl)
   const session = await client.createSession({
@@ -32,7 +27,11 @@ Pond.default().then(async (pond) => {
   // subscribe to values and emit them to actyx
   const { streams, subscriptions } = await mkStreams(variables, session)
 
-  combineLatest(streams).subscribe(executeRules(em))
+  executeValueEmitter(streams, values, (name, value) => {
+    em.valueEvent(valuesTags, machineName, name, value)
+  })
+
+  combineLatest(streams).subscribe(executeOdaRules(em))
 
   // terminate app in a kind way for the opcua server
 
@@ -44,24 +43,6 @@ Pond.default().then(async (pond) => {
   })
 })
 
-const executeRules = (_em: Emitter) => (data: VariableStream) => {
+const executeOdaRules = (_em: Emitter) => (data: VariableStream) => {
   console.log(data)
-}
-
-type mkStreamsReturn = { subscriptions: ClientSubscription[]; streams: OpcuaStreams }
-
-async function mkStreams(variables: Variables, session: ClientSession): Promise<mkStreamsReturn> {
-  const subscriptions: ClientSubscription[] = []
-  const streamsAcc: Partial<OpcuaStreams> = {}
-  let varName: keyof Settings['variables']
-  for (varName in variables) {
-    const { nodeId, poolRate } = variables[varName]
-    const [sub, stream] = await subscribeValue(session, nodeId, poolRate)
-    subscriptions.push(sub)
-    streamsAcc[varName] = stream
-  }
-  return {
-    streams: streamsAcc as Required<typeof streamsAcc>,
-    subscriptions,
-  }
 }
