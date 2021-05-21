@@ -6,6 +6,7 @@ export type Rule = {
   bdeState: number
   bdeDescriptionFromPlc?: string
   bdeDescriptionFixed?: string
+  /** expression to validate state */
   rule: string
   generateError?: boolean
 }
@@ -25,5 +26,6 @@ export type Settings = typeof defaultSetting
 export type Variables = Settings['variables']
 export type VariableNames = keyof Variables
 export type VariableStream = Record<VariableNames, Variant>
+export type VariableStreamData = Record<VariableNames, any>
 
 export type OpcuaStreams = Record<VariableNames, Observable<Variant>>

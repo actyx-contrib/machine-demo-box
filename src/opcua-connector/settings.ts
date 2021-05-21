@@ -21,7 +21,7 @@ export const defaultSetting = {
   values: {
     speed: {
       name: 'speed',
-      decimal: 1,
+      decimal: 2,
       distinct: true,
     },
     temp: {
