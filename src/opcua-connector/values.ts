@@ -27,8 +27,8 @@ export const executeValueEmitter = (
       streams[key]
         .pipe(
           map((v) => v.value),
-          distinctUntilChanged((prev, cur) => !settings.distinct || prev !== cur),
           map(toValue(settings)),
+          distinctUntilChanged((prev, cur) => settings.distinct && prev === cur),
           tap((v) => emit(name, v)),
         )
         .subscribe()
