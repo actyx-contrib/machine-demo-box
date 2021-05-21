@@ -1,18 +1,21 @@
 import {
   AttributeIds,
-  ClientMonitoredItem,
   ClientSession,
   ClientSubscription,
+  DataValue,
   MonitoringMode,
   MonitoringParametersOptions,
   TimestampsToReturn,
+  Variant,
 } from 'node-opcua'
+import { fromEvent, Observable } from 'rxjs'
+import { filter, map } from 'rxjs/operators'
 
 export const subscribeValue = async (
   session: ClientSession,
   nodeId: string,
   samplingInterval: number,
-): Promise<[ClientSubscription, ClientMonitoredItem]> => {
+): Promise<[ClientSubscription, Observable<Variant>]> => {
   const nodeIdSub = {
     nodeId,
     attributeId: AttributeIds.Value,
@@ -38,5 +41,10 @@ export const subscribeValue = async (
     MonitoringMode.Reporting,
   )
 
-  return [subscription, value]
+  const stream = fromEvent(value, 'changed').pipe(
+    filter((v): v is DataValue => typeof v === 'object' && v !== null && v.hasOwnProperty('value')),
+    map((v) => v.value),
+  )
+
+  return [subscription, stream]
 }
