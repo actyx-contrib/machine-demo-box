@@ -1,13 +1,13 @@
 import { OPCUAClientOptions, MessageSecurityMode, SecurityPolicy } from 'node-opcua'
 
-type Rules = Record<
-  string,
-  {
-    bdeState: number
-    inputs: number
-    generateError?: boolean
-  }
->
+type Rule = {
+  bdeState: number
+  bdeDescriptionFromPlc?: string
+  bdeDescriptionFixed?: string
+  rule: string
+  generateError?: boolean
+}
+type Rules = Record<string, Rule>
 
 const defaultSetting = {
   machineName: 'Machine 1',
@@ -19,40 +19,45 @@ const defaultSetting = {
   bdeTags: ['Machine:{id}', 'Machine.state:{id}'],
   valuesTags: ['Machine:{id}', 'Machine.values:{id}'],
   errorTag: ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
-  bdeVariables: {
-    nodeId: 'ns=1;s="state"',
-    publishUnknownState: false,
-  },
-  analogVariables: {
-    counter: {
-      nodeId: 'ns=1;s="speed"',
-    },
-    temp: {
-      nodeId: 'ns=1;s="temp"',
-    },
+  variables: {
+    state: { nodeId: 'ns=1;s="state"', poolRate: 100 },
+    speed: { nodeId: 'ns=1;s="speed"', poolRate: 2000 },
+    temp: { nodeId: 'ns=1;s="temp"', poolRate: 5000 },
+    error: { nodeId: 'ns=1;s="error"', poolRate: 100 },
+    errorDesc: { nodeId: 'ns=1;s="errorDescription"', poolRate: 100 },
   },
   rules: {
     On: {
       bdeState: 1,
-      inputs: 0b000001,
+      rule: 'state == 1',
     },
     Off: {
       bdeState: 0,
-      inputs: 0b000000,
+      rule: 'state == 0',
     },
     'Error A': {
       bdeState: 10,
-      inputs: 0b000011,
+      rule: 'state == 3 && error == 0',
+      bdeDescriptionFixed: 'Power off',
       generateError: true,
     },
     'Error B': {
       bdeState: 10,
-      inputs: 0b000010,
+      rule: 'state == 3 && (error == 1 || error == 2) && error != 10',
+      bdeDescriptionFromPlc: 'error code: {error}',
+      generateError: true,
+    },
+    'Error C': {
+      bdeState: 10,
+      rule: 'state == 3 && error > 2 && error != 10',
+      bdeDescriptionFromPlc: 'critical error: {error} at {state} - {}',
       generateError: true,
     },
     Emergency: {
       bdeState: 99,
-      inputs: 0b10000000,
+      rule: 'state == 3 && errorDesc == "Emergency"',
+      bdeDescriptionFixed: 'Emergency',
+      generateError: true,
     },
   } as Rules,
 }
