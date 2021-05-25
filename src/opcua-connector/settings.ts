@@ -18,7 +18,7 @@ export const defaultSetting = {
     error: { nodeId: 'ns=1;s="error"', poolRate: 100 },
     errorDesc: { nodeId: 'ns=1;s="errorDescription"', poolRate: 100 },
   },
-  values: {
+  valueEmitters: {
     speed: {
       name: 'speed',
       decimal: 2,
@@ -31,37 +31,37 @@ export const defaultSetting = {
       distinct: true,
     },
   } as Values,
-  rules: {
+  machineStateEmitters: {
     On: {
-      odaState: 1,
+      state: 1,
       rule: 'state == 1',
     },
     Off: {
-      odaState: 0,
+      state: 0,
       rule: 'state == 0',
     },
     'Error A': {
-      odaState: 10,
+      state: 10,
       rule: 'state == 2 && error == 0',
-      odaDescription: 'Power off',
+      description: 'Power off',
       generateError: true,
     },
     'Error B': {
-      odaState: 10,
-      rule: 'state == 2 && (error == 1 || error == 2) && error != 10',
-      odaDescription: 'error code: {error}',
+      state: 10,
+      rule: 'state == 2 && (error == 1 || error == 2)',
+      description: 'error code: {error}',
       generateError: true,
     },
     'Error C': {
-      odaState: 10,
+      state: 10,
       rule: 'state == 2 && error > 2 && error != 10',
-      odaDescription: 'critical error: {error} at {state} - {}',
+      description: 'critical error: {error} at {state} - {errorDesc}',
       generateError: true,
     },
     Emergency: {
-      odaState: 99,
+      state: 99,
       rule: 'state == 2 && errorDesc == "Emergency"',
-      odaDescription: 'Emergency',
+      description: 'Emergency',
       generateError: true,
     },
   } as Rules,
@@ -97,5 +97,4 @@ export const opcuaSettings: OPCUAClientOptions = {
   securityMode: MessageSecurityMode.None,
   securityPolicy: SecurityPolicy.None,
   endpoint_must_exist: false,
-  applicationUri: '',
 }

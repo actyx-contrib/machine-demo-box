@@ -1,7 +1,7 @@
 import { Pond } from '@actyx/pond'
 import { OPCUAClient, UserTokenType } from 'node-opcua'
 import { mkEmitter } from './emitter'
-import { executeOdaRules } from './oda'
+import { executeStateEmitter } from './machineState'
 import { getSettings, opcuaSettings } from './settings'
 import { mkStreams } from './streams'
 import { executeValueEmitter } from './values'
@@ -12,11 +12,11 @@ Pond.default().then(async (pond) => {
     machineName,
     opcua,
     variables,
-    values,
+    valueEmitters,
     valuesTags,
     odaTags,
     errorTag,
-    rules,
+    machineStateEmitters,
   } = getSettings()
 
   // init OPCUA connection and open new session
@@ -43,14 +43,14 @@ Pond.default().then(async (pond) => {
   // start value emitter based on the streams and settings,
   // each value in the settings, Receive the date from OPCUA, transform them according to the settings
   // and call the em.valueEvent function
-  executeValueEmitter(streams, values, (name, value) =>
+  executeValueEmitter(streams, valueEmitters, (name, value) =>
     em.valueEvent(valuesTags, machineName, name, value),
   )
 
   // start the
-  executeOdaRules(
+  executeStateEmitter(
     streams,
-    rules,
+    machineStateEmitters,
     (state: number, description: string | undefined) => {
       em.stateEvent(odaTags, machineName, state, description)
       console.log(state, description)

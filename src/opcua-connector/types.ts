@@ -3,8 +3,8 @@ import { Observable } from 'rxjs'
 import { defaultSetting } from './settings'
 
 export type Rule = {
-  odaState: number
-  odaDescription?: string
+  state: number
+  description?: string
   /** expression to validate state */
   rule: string
   generateError?: boolean

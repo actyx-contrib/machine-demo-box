@@ -44,11 +44,7 @@ const main = async () => {
         .reduce<string[]>(
           (acc, ep) => [
             ...acc,
-            `${
-              ep.port
-            } - ${ep
-              .endpointDescriptions()[0]
-              .securityMode.toString()}, ${ep
+            `${ep.port} - ${ep.endpointDescriptions()[0].securityMode.toString()}, ${ep
               .endpointDescriptions()[0]
               .securityPolicyUri?.toString()}`,
           ],
