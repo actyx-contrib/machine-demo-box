@@ -20,6 +20,12 @@ export type Value = {
 }
 export type Values = Record<string, Value>
 
+export type Variable = {
+  nodeId: string
+  pollRate: number
+}
+export type VariableSettings = Record<string, Variable>
+
 export type Settings = typeof defaultSetting
 
 export type Variables = Settings['variables']

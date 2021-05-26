@@ -8,6 +8,7 @@ import {
   TimestampsToReturn,
   Variant,
 } from 'node-opcua'
+import { OpcuaStreams, Settings, Variables } from './types'
 import { fromEvent, Observable } from 'rxjs'
 import { filter, map } from 'rxjs/operators'
 
@@ -47,4 +48,25 @@ export const subscribeValue = async (
   )
 
   return [subscription, stream]
+}
+
+type mkStreamsReturn = { subscriptions: ClientSubscription[]; streams: OpcuaStreams }
+
+export const mkStreams = async (
+  variables: Variables,
+  session: ClientSession,
+): Promise<mkStreamsReturn> => {
+  const subscriptions: ClientSubscription[] = []
+  const streamsAcc: Partial<OpcuaStreams> = {}
+  let varName: keyof Settings['variables']
+  for (varName in variables) {
+    const { nodeId, pollRate } = variables[varName]
+    const [sub, stream] = await subscribeValue(session, nodeId, pollRate)
+    subscriptions.push(sub)
+    streamsAcc[varName] = stream
+  }
+
+  const streams = streamsAcc as OpcuaStreams
+
+  return { streams, subscriptions }
 }

@@ -4,12 +4,13 @@ This example contains applications to get you started with ...
 
 * ... connecting a machine to an Actyx environment,
 * ... reading values from the machine,
+* ... reading values from a OPC UA server,
 * ... visualizing values on a dashboard, and
 * ... interacting using a web interface.
 
 It also comes with a mock data generator that produces random values for visualization, in case you don't have a PLC at hand.
 
-## Prerequistes
+## ⚙️ Prerequistes
 
 To run this demo, you need the following tools:
 
@@ -17,7 +18,7 @@ To run this demo, you need the following tools:
 * NodeJS >= v 14 + NPM (https://nodejs.org/en/)
 * Docker (https://www.docker.com/get-started)
 
-To connect to an S7 PLC, it needs to be accessible using TSAP.
+To connect to an Siemens PLC, it needs to be accessible using TSAP.
 
 ## 🚀 Quickstart
 
@@ -30,9 +31,20 @@ To see the demo in action w/o having to connect to a PLC, you need to start the 
 * Run the worker ui application using `npm run ui:worker-ui:start` from the project root.
 * Start the DB exporter using `npm run node:db-exporter:start` from the project root.
 
-If you want to connect to a Siemens PLC, review the default connection configuration in [src/tsap-connector/settings.ts](src/tsap-connector/settings.ts#L14) and either adjust or set them using the `APP_SETTINGS` environment variable.
+If you want to connect to a Siemens PLC, review the default connection configuration in [src/tsap-connector/settings.ts](src/tsap-connector/settings.ts#L14) and either adjust or set them using the `APP_SETTINGS` environment variable. You can start the tsap-connector with `npm run node:tsap-connector:start`.
+
+If you want to connect to a OPC UA server, review the default connection configuration in [src/opcua-connector/settings.ts](src/opcua-connector/settings.ts#L6) and either adjust or set them using the `APP_SETTINGS` environment variable. You can start the opcua-connector with `npm run node:opcua-connector:start`.
+The default configuration is compatible to the include opcua-mock-plc. Yuu can start it with `npm run node:opcua-mock-plc:start`.
 
 Otherwise you can work with example data: Run `npm run node:mock-machine-connector:start` to produce mock machine data.
+
+## 🗃️ Disclaimer
+
+This is an active OpenSource project, presenting one possible way to implement different kinds of connectors and applications.
+
+We are not forcing backward compatibility by any cost. In the case of a breaking change, we will increase the major version number of the whole project.
+
+Please follow the updates at https://community.actyx.com/t/actyx-examples-machine-demo-box/87 when you update your project.
 
 ## 📦 Applications
 

@@ -1,6 +1,7 @@
 import { distinctUntilChanged, map, tap } from 'rxjs/operators'
 import { OpcuaStreams, Value, Values } from './types'
 
+/** helper to transalte a value into the configured output */
 const toValue =
   (settings: Value) =>
   (value: unknown): number => {
@@ -18,6 +19,15 @@ const toValue =
     return nr
   }
 
+/**
+ * Listen to the configured values and emit an event if one value changed.
+ *
+ * All settings could be found in the values configuration
+ *
+ * @param streams stream of all opcua values
+ * @param values configuration of the value stream from the settings
+ * @param emit callback when a value event needs to be emitted
+ */
 export const executeValueEmitter = (
   streams: OpcuaStreams,
   values: Values,

@@ -2,8 +2,8 @@ import { Pond } from '@actyx/pond'
 import { OPCUAClient, UserTokenType } from 'node-opcua'
 import { mkEmitter } from './emitter'
 import { executeStateEmitter } from './machineState'
+import { mkStreams } from './opcua'
 import { getSettings, opcuaSettings } from './settings'
-import { mkStreams } from './streams'
 import { executeValueEmitter } from './values'
 
 Pond.default().then(async (pond) => {
@@ -14,7 +14,7 @@ Pond.default().then(async (pond) => {
     variables,
     valueEmitters,
     valuesTags,
-    odaTags,
+    stateTags,
     errorTag,
     machineStateEmitters,
   } = getSettings()
@@ -52,7 +52,7 @@ Pond.default().then(async (pond) => {
     streams,
     machineStateEmitters,
     (state: number, description: string | undefined) => {
-      em.stateEvent(odaTags, machineName, state, description)
+      em.stateEvent(stateTags, machineName, state, description)
       console.log(state, description)
     },
     (id: string, error: number, description: string | undefined) => {

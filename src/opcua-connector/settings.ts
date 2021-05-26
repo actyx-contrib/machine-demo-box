@@ -1,5 +1,7 @@
 import { OPCUAClientOptions, MessageSecurityMode, SecurityPolicy } from 'node-opcua'
-import { Rules, Settings, Values } from './types'
+import { Rules, Settings, Values, VariableSettings } from './types'
+import Ajv from 'ajv'
+import schema from './settings-schema.json'
 
 export const defaultSetting = {
   machineName: 'Machine 1',
@@ -8,16 +10,16 @@ export const defaultSetting = {
     userName: 'actyx',
     password: 'actyx',
   },
-  odaTags: ['Machine:{id}', 'Machine.state:{id}'],
+  stateTags: ['Machine:{id}', 'Machine.state:{id}'],
   valuesTags: ['Machine:{id}', 'Machine.values:{id}'],
   errorTag: ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
   variables: {
-    state: { nodeId: 'ns=1;s="state"', poolRate: 100 },
-    speed: { nodeId: 'ns=1;s="speed"', poolRate: 2000 },
-    temp: { nodeId: 'ns=1;s="temp"', poolRate: 5000 },
-    error: { nodeId: 'ns=1;s="error"', poolRate: 100 },
-    errorDesc: { nodeId: 'ns=1;s="errorDescription"', poolRate: 100 },
-  },
+    state: { nodeId: 'ns=1;s="state"', pollRate: 100 },
+    speed: { nodeId: 'ns=1;s="speed"', pollRate: 2000 },
+    temp: { nodeId: 'ns=1;s="temp"', pollRate: 5000 },
+    error: { nodeId: 'ns=1;s="error"', pollRate: 100 },
+    errorDesc: { nodeId: 'ns=1;s="errorDescription"', pollRate: 100 },
+  } as VariableSettings,
   valueEmitters: {
     speed: {
       name: 'speed',
@@ -32,27 +34,27 @@ export const defaultSetting = {
     },
   } as Values,
   machineStateEmitters: {
-    On: {
-      state: 1,
-      rule: 'state == 1',
-    },
     Off: {
       state: 0,
       rule: 'state == 0',
     },
-    'Error A': {
+    On: {
+      state: 1,
+      rule: 'state == 1',
+    },
+    'Power off': {
       state: 10,
       rule: 'state == 2 && error == 0',
       description: 'Power off',
       generateError: true,
     },
-    'Error B': {
+    Error: {
       state: 10,
       rule: 'state == 2 && (error == 1 || error == 2)',
       description: 'error code: {error}',
       generateError: true,
     },
-    'Error C': {
+    'Critical Error': {
       state: 10,
       rule: 'state == 2 && error > 2 && error != 10',
       description: 'critical error: {error} at {state} - {errorDesc}',
@@ -72,11 +74,11 @@ export const appSettings = <S>(defaultSettings: S): S => {
     if (process.env.APP_SETTINGS) {
       const settings = JSON.parse(process.env.APP_SETTINGS) as S
 
-      // const validate = new Ajv().compile(schema)
-      // const valid = validate(settings)
-      // if (!valid) {
-      //   log.error('failed to parse APP_SETTINGS', { error: validate.errors || 'unknown' })
-      // }
+      const validate = new Ajv().compile(schema)
+      const valid = validate(settings)
+      if (!valid) {
+        console.error('failed to parse APP_SETTINGS', { error: validate.errors || 'unknown' })
+      }
 
       return settings
     }

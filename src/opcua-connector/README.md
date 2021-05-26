@@ -1,11 +1,51 @@
 # OPC UA Connector
 
+The opcua-connector is a very configurable connector to produce tree kind of events.
+
+ - valueChanged  - Sensor/Value readings, mostly used for IoT cases. (dashboard, machine learning, ...)
+ - statusChanged - The state of the machine has changed. (On, Off, Starting, Productive, Error, Emergency, ...)
+ - errorOccurred - Error occurred that needs to be handled by something or someone.
+
+
+## 🚀 How it works
+
+The system is build in tree logical modules.
+
+### 1. OPC UA connection
+
+The OPC UA and variables settings are used to connect to the OPC UA server and read the values as a continues stream.
+
+### 2. valueEmitters
+
+Consuming the OPC UA streams from module 1. The values get modified and probable emitted to actyx.
+
+You can configure this module with `valueEmitters` and `valuesTags`.
+
+Each valueEmitters could be configured as:
+
+ - `name` Name of the sensor. This name is used to emit the event
+ - `template` [optional] Render the incoming value with a fixed pattern. the value will always replace "{value}" in the text. Example: "{value}C°"
+ - `decimal` [optional] Number of decimals the value should be fixed to.
+ - `distinct` [optional] Flag if the value should only be emitted if the value changed. (could be false in the case, the value needs to be documented every 24h)
+
+### 3. machineStateEmitter
+
+Consuming the OPC UA streams from module 1. The values get logically check by a rule in the configuration and probable emit an stateChanged event or an errorOccurred event to actyx.
+
+You can configure this module with `machineStateEmitters`, `stateTags`, and `errorTag`
+
+Each machineStateEmitters could be configured as:
+
+ - `state` system wide number to reference this state
+ - `rule` logical rule to verify if the machine is in this state
+ - `description` [optional] template description for the state and error event
+ - `generateError` [optional] flag if an errorOccurred event should be emitted
 
 
 
-Error events are emitted based on the `generateError` property from the conversion rule configuration.
+## 🗃️ Settings Example
 
-## Settings Example
+This settings do not match the `opcua-mock-plc` but should show who the system could be configured
 
 ```JSON
 {
@@ -15,32 +55,30 @@ Error events are emitted based on the `generateError` property from the conversi
     "userName": "actyx",
     "password": "actyx"
   },
-  "odaTags": [ "Machine:{id}", "Machine.state:{id}" ],
-  "valuesTags": [ "Machine:{id}", "Machine.values:{id}" ],
-  "errorTag": [ "Machine:{id}", "error:{uuid}", "error.Occurred" ],
   "variables": {
     "state": {
       "nodeId": "ns=1;s=\"state\"",
-      "poolRate": 100
+      "pollRate": 100
     },
     "speed": {
       "nodeId": "ns=1;s=\"speed\"",
-      "poolRate": 2000
+      "pollRate": 2000
     },
     "temp": {
       "nodeId": "ns=1;s=\"temp\"",
-      "poolRate": 5000
+      "pollRate": 5000
     },
     "error": {
       "nodeId": "ns=1;s=\"error\"",
-      "poolRate": 100
+      "pollRate": 100
     },
     "errorDesc": {
       "nodeId": "ns=1;s=\"errorDescription\"",
-      "poolRate": 100
+      "pollRate": 100
     }
   },
-  "values": {
+  "valuesTags": ["Machine:{id}", "Machine.values:{id}"],
+  "valueEmitters": {
     "speed": {
       "name": "speed",
       "decimal": 2,
@@ -53,37 +91,39 @@ Error events are emitted based on the `generateError` property from the conversi
       "distinct": true
     }
   },
-  "rules": {
-    "On": {
-      "odaState": 1,
-      "rule": "state == 1"
-    },
+  "stateTags": ["Machine:{id}", "Machine.state:{id}"],
+  "errorTag": ["Machine:{id}", "error:{uuid}", "error.Occurred"],
+  "machineStateEmitters": {
     "Off": {
-      "odaState": 0,
+      "state": 0,
       "rule": "state == 0"
     },
-    "Error A": {
-      "odaState": 10,
+    "On": {
+      "state": 1,
+      "rule": "state == 1"
+    },
+    "Power off": {
+      "state": 10,
       "rule": "state == 2 && error == 0",
-      "odaDescription": "Power off",
+      "description": "Power off",
       "generateError": true
     },
-    "Error B": {
-      "odaState": 10,
-      "rule": "state == 2 && (error == 1 || error == 2) && error != 10",
-      "odaDescription": "error code: {error}",
+    "Error": {
+      "state": 10,
+      "rule": "state == 2 && (error == 1 || error == 2)",
+      "description": "error code: {error}",
       "generateError": true
     },
-    "Error C": {
-      "odaState": 10,
+    "Critical Error": {
+      "state": 10,
       "rule": "state == 2 && error > 2 && error != 10",
-      "odaDescription": "critical error: {error} at {state} - {}",
+      "description": "critical error: {error} at {state} - {errorDesc}",
       "generateError": true
     },
     "Emergency": {
-      "odaState": 99,
+      "state": 99,
       "rule": "state == 2 && errorDesc == \"Emergency\"",
-      "odaDescription": "Emergency",
+      "description": "Emergency",
       "generateError": true
     }
   }
