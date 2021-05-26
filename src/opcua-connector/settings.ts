@@ -71,19 +71,19 @@ export const defaultSetting = {
 
 export const appSettings = <S>(defaultSettings: S): S => {
   try {
+    process.env.APP_SETTINGS = JSON.stringify(defaultSettings)
     if (process.env.APP_SETTINGS) {
       const settings = JSON.parse(process.env.APP_SETTINGS) as S
-
       const validate = new Ajv().compile(schema)
       const valid = validate(settings)
       if (!valid) {
-        console.error('failed to parse APP_SETTINGS', { error: validate.errors || 'unknown' })
+        console.error('failed to validate APP_SETTINGS', { error: validate.errors || 'unknown' })
       }
 
       return settings
     }
   } catch (e) {
-    console.error('failed to parse APP_SETTINGS', process.env.APP_SETTINGS)
+    console.error('failed to parse APP_SETTINGS', e, process.env.APP_SETTINGS)
   }
   return defaultSettings
 }
