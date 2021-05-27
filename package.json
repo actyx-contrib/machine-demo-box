@@ -36,8 +36,7 @@
     "node:opcua-connector:start": "nodemon --watch src/opcua-connector --exec ts-node src/opcua-connector/index.ts",
     "node:opcua-connector:build": "tsc src/opcua-connector/index.ts --outDir build/opcua-connector --esModuleInterop --skipLibCheck",
     "node:opcua-connector:docker:build": "npm run node:opcua-connector:build && docker build -t opcua-connector -f src/opcua-connector/Dockerfile .",
-    "node:opcua-connector:docker:build-aarch64": "npm run node:opcua-connector:build && docker buildx build --platform linux/arm64 -t opcua-connector-aarch64 -f src/opcua-connector/Dockerfile --load .",
-    "node:opcua-connector:package": "ax apps package src/opcua-connector/ax-manifest.yml"
+    "node:opcua-connector:docker:build-aarch64": "npm run node:opcua-connector:build && docker buildx build --platform linux/arm64 -t opcua-connector-aarch64 -f src/opcua-connector/Dockerfile --load ."
   },
   "keywords": [],
   "author": "",
