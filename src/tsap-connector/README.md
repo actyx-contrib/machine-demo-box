@@ -10,6 +10,8 @@ Error events are emitted based on the `generateError` property from the conversi
 
 ## Settings Example
 
+You can find the schema for each value in [./settings-schema.json].
+
 ```JSON
 {
   "machineName": "Machine 1",

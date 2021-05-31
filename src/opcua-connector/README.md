@@ -43,6 +43,7 @@ Each machineStateEmitters could be configured as:
 ## 🗃️ Settings Example
 
 This settings do not match the `opcua-mock-plc` but should show who the system could be configured
+You can find the schema for each value in [./settings-schema.json].
 
 ```JSON
 {
