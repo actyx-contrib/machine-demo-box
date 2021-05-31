@@ -1,7 +1,7 @@
 import { distinctUntilChanged, map, tap } from 'rxjs/operators'
 import { OpcuaStreams, Value, Values } from './types'
 
-/** helper to transalte a value into the configured output */
+/** helper to translate a value into the configured output */
 const toValue =
   (settings: Value) =>
   (value: unknown): number => {

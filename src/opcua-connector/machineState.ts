@@ -58,9 +58,9 @@ const toValues = (values: VariableStream): VariableStreamData =>
 /**
  * Validate the given rule with the value stream
  *
- * It will create a function, executing the code giving in the settings
+ * Returns event data if the expression specified in `rule` evaluates to true
  *
- * WARNING: this code is not validating the settings for any vulnerability code.
+ * WARNING: this code is not validating the settings for malicious code.
  *
  */
 const validateRule =
@@ -89,9 +89,8 @@ const validateRule =
   }
 
 /**
- * Call the given handler by the state of the event and the applied rule.
- *
- * the rule will set the generateError flag
+ * Call the given handler with the event. The `emitError` handler is triggered,
+ * only if the generateError flag is set
  */
 const publishEvents =
   (emitState: EmitStateHandler, emitError: EmitErrorHandler) => (events: MachineStateEvents) =>
@@ -128,5 +127,5 @@ const renderDescription = ({ values, rule, name }: MachineStateEventSource): Mac
 }
 
 /** wrapper to replace all appearances in a give text */
-export const replaceAll = (text: string, placeholder: string, value: unknown): string =>
+const replaceAll = (text: string, placeholder: string, value: unknown): string =>
   text.replace(new RegExp(placeholder, 'g'), `${value}`)

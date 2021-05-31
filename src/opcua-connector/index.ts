@@ -61,12 +61,13 @@ Pond.default().then(async (pond) => {
     },
   )
 
-  // terminate app in a kind way for the opcua server
+  // clean up OPC UA connections when app terminates
 
   process.on('SIGINT', async () => {
     subscriptions.forEach((sub) => sub.terminate())
     session.close()
     await client.disconnect()
     console.log('terminated')
+    process.exit()
   })
 })

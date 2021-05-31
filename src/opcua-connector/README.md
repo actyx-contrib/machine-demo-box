@@ -1,47 +1,44 @@
 # OPC UA Connector
 
-The opcua-connector is a very configurable connector to produce tree kind of events.
+The opcua-connector is a very configurable connector to produce three kind of events.
 
- - valueChanged  - Sensor/Value readings, mostly used for IoT cases. (dashboard, machine learning, ...)
- - statusChanged - The state of the machine has changed. (On, Off, Starting, Productive, Error, Emergency, ...)
- - errorOccurred - Error occurred that needs to be handled by something or someone.
-
+- valueChanged - Sensor/Value readings, mostly used for IoT cases. (dashboard, machine learning, ...)
+- statusChanged - The state of the machine has changed. (On, Off, Starting, Productive, Error, Emergency, ...)
+- errorOccurred - Error occurred that needs to be handled by something or someone.
 
 ## 🚀 How it works
 
-The system is build in tree logical modules.
+The system consists of three separate modules.
 
 ### 1. OPC UA connection
 
-The OPC UA and variables settings are used to connect to the OPC UA server and read the values as a continues stream.
+The OPC UA and variables settings are used to connect to the OPC UA server and read the values as a continuous stream.
 
 ### 2. valueEmitters
 
-Consuming the OPC UA streams from module 1. The values get modified and probable emitted to actyx.
+`valueEmitters` consume the OPC UA streams from the first module. These values are formatted/modified and are emitted as Actyx events,
 
 You can configure this module with `valueEmitters` and `valuesTags`.
 
-Each valueEmitters could be configured as:
+Each `valueEmitter` can be configured using the following properties:
 
- - `name` Name of the sensor. This name is used to emit the event
- - `template` [optional] Render the incoming value with a fixed pattern. the value will always replace "{value}" in the text. Example: "{value}C°"
- - `decimal` [optional] Number of decimals the value should be fixed to.
- - `distinct` [optional] Flag if the value should only be emitted if the value changed. (could be false in the case, the value needs to be documented every 24h)
+- `name` Name of the sensor. This name is used in the `valueChanged` event as `name`.
+- `template` [optional] Render the incoming value with a fixed pattern. The value will always replace "{value}" in the template. Example: "{value}C°"
+- `decimal` [optional] Number of decimals the value should be fixed to.
+- `distinct` [optional] Flag if the value should only be emitted if the value changed.
 
 ### 3. machineStateEmitter
 
-Consuming the OPC UA streams from module 1. The values get logically check by a rule in the configuration and probable emit an stateChanged event or an errorOccurred event to actyx.
+`machineStateEmitter` consumes OPC UA streams from the OPC UA connection. The configured `rule`s are applied to the read values to determine whether to emit an event. If an event is to be emitted, `generateError` determines whether to emit a `stateChanged` or `errorOccurred` event.
 
 You can configure this module with `machineStateEmitters`, `stateTags`, and `errorTag`
 
 Each machineStateEmitters could be configured as:
 
- - `state` system wide number to reference this state
- - `rule` logical rule to verify if the machine is in this state
- - `description` [optional] template description for the state and error event
- - `generateError` [optional] flag if an errorOccurred event should be emitted
-
-
+- `state` system wide number to reference this state
+- `rule` logical rule to verify if the machine is in this state
+- `description` [optional] template description for the state and error event
+- `generateError` [optional] flag if an errorOccurred event should be emitted
 
 ## 🗃️ Settings Example
 
@@ -127,5 +124,115 @@ This settings do not match the `opcua-mock-plc` but should show who the system c
       "generateError": true
     }
   }
+}
+```
+
+The connector will use the `opcua` settings to connect to the OPC UA Server.
+
+### variables
+
+After that, every nodeId in `variables` is monitored to react on changes. The `pollRate` will define the maximum frequency a value gets checked.
+
+| variable name | value                |
+| ------------- | -------------------- |
+| state         | 2                    |
+| speed         | 3.141592653589793    |
+| temp          | 31.4159265           |
+| error         | 7                    |
+| errorDesc     | "Oil level critical" |
+
+According to this values, the `valueEmitters` and the `machineStateEmitters` get triggered.
+
+### valueEmitters
+
+The `valueEmitters` is configured for two variables. `speed` and `temp`.
+
+#### value: speed
+
+```JSON
+  "speed": {
+    "name": "speed",
+    "decimal": 2,
+    "distinct": true
+  }
+```
+
+The `speed` value get fixed at the seconde `decimal` position and compared to the last value. If the values changes, an actyx event is emitted.
+
+```JS
+{
+  eventType: 'valueChanged',
+  device: 'Machine 1',
+  name: 'speed',
+  value: 3.14,
+}
+```
+
+As you can see, the device is set from the settings as well. The `machineName` setting is in charge for that.
+
+#### value: temp
+
+```JSON
+  "temp": {
+    "name": "temperature",
+    "template": "{value}C°",
+    "decimal": 1,
+    "distinct": true
+  }
+```
+
+Same here, the `temp` value get fixed at the first `decimal` position, renderst in the `template`, and compared to the last value. If the values changes, an actyx event is emitted.
+
+```JS
+{
+  eventType: 'valueChanged',
+  device: 'Machine 1',
+  name: 'temperature',
+  value: "31.4C°",
+}
+```
+
+### machineStateEmitters
+
+The `machineStateEmitters` is configured with 6 rules. `"Off"`, `"On"`, `"Power off"`, `"Error"`, `"Critical Error"`, and `"Emergency"`.
+
+For each configuration, the rule gets validated. If a rule match, an actyx event `statusChanged` gets emitted. Additionally, if `generateError` is also set as true, am `errorOccurred` event gets emitted.
+
+In our example, the `Critical Error` is the only matching rule.
+
+```JSON
+"Critical Error": {
+  "state": 10,
+  "rule": "state == 2 && error > 2 && error != 10",
+  "description": "critical error: {error} at {state} - {errorDesc}",
+  "generateError": true
+},
+```
+
+```js
+let state = 2
+let error = 7(state == 2 && error > 2 && error != 10) === true
+```
+
+According to the configuration, following event is emitted.
+
+```JS
+{
+  eventType: 'statusChanged',
+  device: 'Machine 1',
+  state: 10,
+  stateDesc: 'critical error: 7 at 2 - Oil level critical',
+}
+```
+
+In this example, `generateError` is also set as true and a errorOccurred event gets emitted in addition.
+
+```JS
+{
+  eventType: 'errorOccurred',
+  errorId: 'some-random-uuid',
+  machineName: 'Machine 1',
+  errorCode: 10,
+  description: 'critical error: 7 at 2 - Oil level critical',
 }
 ```
