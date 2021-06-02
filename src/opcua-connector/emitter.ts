@@ -13,10 +13,23 @@ export const renderTag =
       return Tag(rawTag)
     }
   }
+/**
+ * Render the tags from the configuration with the given values.
+ *
+ * example input:
+ * ```
+ * machineName = M1
+ * errorId = 123
+ * rawTag = ['a:{id}', 'b:{uuid}', 'c']
+ * ```
+ *
+ * output:
+ * ```['a:M1','b:123','c']
+ */
 export const renderTags = (tags: string[], machineName: string, errorId: string): Tags<unknown> =>
   tags.map(renderTag(machineName, errorId)).reduce((acc, tag) => acc.and(tag), Tags())
 
-type Emitter = {
+export type Emitter = {
   actyx: Pond
   stateEvent: (
     tagArray: Array<string>,

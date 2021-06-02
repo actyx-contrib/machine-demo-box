@@ -4,12 +4,13 @@ This example contains applications to get you started with ...
 
 * ... connecting a machine to an Actyx environment,
 * ... reading values from the machine,
+* ... reading values from a OPC UA server,
 * ... visualizing values on a dashboard, and
 * ... interacting using a web interface.
 
 It also comes with a mock data generator that produces random values for visualization, in case you don't have a PLC at hand.
 
-## Prerequistes
+## ⚙️ Prerequistes
 
 To run this demo, you need the following tools:
 
@@ -17,7 +18,7 @@ To run this demo, you need the following tools:
 * NodeJS >= v 14 + NPM (https://nodejs.org/en/)
 * Docker (https://www.docker.com/get-started)
 
-To connect to an S7 PLC, it needs to be accessible using TSAP.
+To connect to an Siemens PLC, it needs to be accessible using TSAP.
 
 ## 🚀 Quickstart
 
@@ -26,13 +27,25 @@ To see the demo in action w/o having to connect to a PLC, you need to start the 
 * Clone this repository
 * Run `npm install` from the project folder
 * Make sure `Actyx` is running on your node
-* Start the dasboard and database by running `./dasboard.sh -i` from `src/postgres-grafana`. If you don't use bash, please refer to [the dashboard README](src/postgres-grafana/README.md).
+* Start the dashboard and database by running `./dasboard.sh -i` from `src/postgres-grafana`. If you don't use bash, please refer to [the dashboard README](src/postgres-grafana/README.md).
 * Run the worker ui application using `npm run ui:worker-ui:start` from the project root.
 * Start the DB exporter using `npm run node:db-exporter:start` from the project root.
 
-If you want to connect to a Siemens PLC, review the default connection configuration in [src/tsap-connector/settings.ts](src/tsap-connector/settings.ts#L14) and either adjust or set them using the `APP_SETTINGS` environment variable.
+If you want to connect to a Siemens PLC, review the default connection configuration in [src/tsap-connector/settings.ts](src/tsap-connector/settings.ts#L14) and either adjust or set them using the `APP_SETTINGS` environment variable. You can start the tsap-connector with `npm run node:tsap-connector:start`.
 
-Otherwise you can work with example data: Run `npm run node:mock-machine-connector:start` to produce mock machine data.
+If you want to connect to an OPC UA server, review the default connection configuration in [src/opcua-connector/settings.ts](src/opcua-connector/settings.ts#L6) and either adjust or set them using the `APP_SETTINGS` environment variable. You can start the opcua-connector with `npm run node:opcua-connector:start`.
+The default configuration is compatible to the include opcua-mock-plc. You can start it with `npm run node:opcua-mock-plc:start`.
+
+Otherwise, you can work with example data: Run `npm run node:mock-machine-connector:start` to produce mock machine data.
+
+## 🗃️ Disclaimer
+
+The Actyx DemoBox is an active OpenSource project, presenting one possible way to implement different kinds of connectors and applications.
+
+While we don't guarantee we'll keep this project backward compatible, we will stick with semantic versioning.
+If there are breaking changes, the major version will be increased.
+
+Please follow the updates at https://community.actyx.com/t/actyx-examples-machine-demo-box/87 when you update your project.
 
 ## 📦 Applications
 
@@ -42,6 +55,7 @@ The demo box project was created using the [`axp` utility for Actyx projects](ht
 ### 🔌 Machine Connectors
 
 Machine connectors read values from PLCs and publish them as Actyx events.
+
 #### ⚙️ TSAP
 
 The TSAP connector uses [the nodes7 library](https://www.npmjs.com/package/nodes7) to connect to and read values from an S7/Siemens Logo! PLC.
@@ -49,34 +63,20 @@ The TSAP connector uses [the nodes7 library](https://www.npmjs.com/package/nodes
 The relevant inputs can be configured and converted into events using a (also configurable) declarative rule set.
 
 For details, see [the application's README](./src/tsap-connector/README.md).
+
 #### ⚙️ OPC UA
 
-We're sorry, the OPC UA connector is not quite finished yet.
+The OPCUA-connector uses [the node-opcua library](https://node-opcua.github.io/) to connect to and read values from a OPC UA server.
 
-If you do need it _now_, please let us know via https://community.actyx.com/.
+The relevant values can be configured and converted into events using a (also configurable) declarative rule set.
+
+For details, see [the application's README](./src/opcua-connector/README.md).
 
 ##### 🎲 Opcua Mock PLC
 
-The opcua-mock-plc starts a opcua-server and simulates a very trivial machine with a state, a speed value, and a temperature.
+The opcua-mock-plc starts an opcua-server and simulates a very trivial machine with a state, a speed value, and a temperature.
 
-OPCUA info:
-```
-default address: opc.tcp://localhost:4334
-security: user - actyx | password - actyx
-Component State: /mockPLC/State | ns=1;s=state | Int16
-Component Speed: /mockPLC/Speed | ns=1;s=speed | Float
-Component Temp:  /mockPLC/Temp  | ns=1;s=temp  | Float
-```
-
-Start the opcua-mock-plc with `npm run node:opcua-mock-plc:start`.
-
-Use the environment variable `OPCUA_MOCK_PORT` to define another port to start multiple mock-plcs
-
-E.g.:
-```
-Linux/Mac: set OPCUA_MOCK_PORT=4335; npm run node:opcua-mock-plc:start
-Windows: set OPCUA_MOCK_PORT=4335 && npm run node:opcua-mock-plc:start
-```
+For details, see [the application's README](./src/opcua-mock-plc/README.md).
 
 #### 🎲 Mock
 

@@ -29,40 +29,32 @@ export const App = (): JSX.Element => {
     <div>
       <Header text="Machine Error Overview" />
       {devMode && (
-        <div style={{ display: "flex" }}>
-
-          <div style={{ margin: "1em" }}>
+        <div style={{ display: 'flex' }}>
+          <div style={{ margin: '1em' }}>
             <ToggleButtons
-              onToggle={id => setDevModeErrorMachine(id)}
+              onToggle={(id) => setDevModeErrorMachine(id)}
               items={[
                 { id: 'm1', label: 'Machine 1' },
-                { id: 'm2', label: 'Machine 2' }
+                { id: 'm2', label: 'Machine 2' },
               ]}
               initToggledItemId="third"
             />
           </div>
 
-          <div style={{ margin: "1em" }}>
+          <div style={{ margin: '1em' }}>
             <ToggleButtons
-              onToggle={id => setDevModeErrorType(id)}
+              onToggle={(id) => setDevModeErrorType(id)}
               items={[
                 { id: 'Error A', label: 'Error A' },
-                { id: 'Error B', label: 'Error B' }
+                { id: 'Error B', label: 'Error B' },
               ]}
               initToggledItemId="third"
             />
           </div>
 
-          <div style={{ margin: "1em" }}>
-            <Button
-              variant="raised"
-              color="primary"
-              onClick={devModeMockError}
-              text="send"
-            />
+          <div style={{ margin: '1em' }}>
+            <Button variant="raised" color="primary" onClick={devModeMockError} text="send" />
           </div>
-
-
         </div>
       )}
       <div style={{ padding: '24px 24px' }}>
