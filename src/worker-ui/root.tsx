@@ -7,11 +7,48 @@ const onError = () => {
   setTimeout(() => location.reload(), 2500)
 }
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Pond loadComponent={<div>Connecting to ActyxOS</div>} onError={onError}>
+type Props = {
+  error: string | undefined
+}
+
+export const Loading = ({ error }: Props): JSX.Element => {
+  const [time, setTime] = React.useState(0)
+
+  React.useEffect(() => {
+    const interval = setInterval(() => setTime((time) => time + 1), 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div>
+      {/* show the user that the connection attempt is ongoing */}
+      <p>Connecting to Actyx … (since {time}sec)</p>
+      {
+        /* showing the error is essential for useful failure response */
+        error ? (
+          <p>
+            Error: <pre>{error}</pre>
+            <br />
+            Is Actyx running?
+          </p>
+        ) : undefined
+      }
+    </div>
+  )
+}
+
+export const Root = (): JSX.Element => {
+  const [error, setError] = React.useState<string | undefined>()
+  return (
+    <Pond loadComponent={<Loading error={error} />} onError={(e) => setError(`${e}`)}>
       <App />
     </Pond>
+  )
+}
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Root />
   </React.StrictMode>,
   document.getElementById('root'),
 )
