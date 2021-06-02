@@ -3,10 +3,6 @@ import * as ReactDOM from 'react-dom'
 import { Pond } from '@actyx-contrib/react-pond'
 import { App } from './App'
 
-const onError = () => {
-  setTimeout(() => location.reload(), 2500)
-}
-
 type Props = {
   error: string | undefined
 }
@@ -39,10 +35,16 @@ export const Loading = ({ error }: Props): JSX.Element => {
 
 export const Root = (): JSX.Element => {
   const [error, setError] = React.useState<string | undefined>()
+  const onError = (e: unknown) => {
+    setError(JSON.stringify(e, undefined, 2))
+    setTimeout(() => location.reload(), 2500)
+  }
   return (
-    <Pond loadComponent={<Loading error={error} />} onError={(e) => setError(`${e}`)}>
-      <App />
-    </Pond>
+    <React.StrictMode>
+      <Pond loadComponent={<Loading error={error} />} onError={onError}>
+        <App />
+      </Pond>
+    </React.StrictMode>
   )
 }
 
