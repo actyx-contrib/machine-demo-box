@@ -1,0 +1,9 @@
+{
+  "name": "opcua-mock-plc",
+  "version": "1.0.0",
+  "main": "opcua-mock-plc/index.js",
+  "license": "ISC",
+  "dependencies": {
+    "node-opcua": "^2.41.1"
+  }
+}

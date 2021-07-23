@@ -1,0 +1,133 @@
+{
+  "additionalProperties": false,
+  "required": [
+    "machineName",
+    "opcua",
+    "stateTags",
+    "valuesTags",
+    "errorTag",
+    "variables",
+    "valueEmitters",
+    "machineStateEmitters"
+  ],
+  "type": "object",
+  "properties": {
+    "machineName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "opcua": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["opcuaUrl", "userName", "password"],
+      "properties": {
+        "opcuaUrl": {
+          "type": "string",
+          "pattern": "^opc.tcp://.*"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "stateTags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9.]*(\\:\\{id\\}){0,1}$"
+      },
+      "minItems": 1
+    },
+    "valuesTags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9.]*(\\:\\{id\\}){0,1}$"
+      },
+      "minItems": 1
+    },
+    "errorTag": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9.]*(\\:\\{id\\}|\\:\\{uuid\\}){0,1}$"
+      },
+      "minItems": 1
+    },
+    "variables": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["nodeId", "pollRate"],
+        "additionalProperties": false,
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "pollRate": {
+            "type": "number",
+            "min": 10
+          }
+        }
+      }
+    },
+    "valueEmitters": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+          },
+          "decimal": {
+            "type": "number",
+            "min": 0
+          },
+          "distinct": {
+            "type": "boolean"
+          },
+          "template": {
+            "type": "string",
+            "pattern": ".*\\{value\\}.*"
+          }
+        }
+      }
+    },
+    "machineStateEmitters": {
+      "type": "object",
+      "propertyNames": {},
+      "additionalProperties": {
+        "type": "object",
+        "required": ["state", "rule"],
+        "additionalProperties": false,
+        "properties": {
+          "state": {
+            "type": "number"
+          },
+          "rule": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "generateError": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

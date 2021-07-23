@@ -23,11 +23,6 @@ const defaultSetting = {
   bdeTags: ['Machine:{id}', 'Machine.state:{id}'],
   valuesTags: ['Machine:{id}', 'Machine.values:{id}'],
   errorTag: ['Machine:{id}', 'error:{uuid}', 'error.Occurred'],
-  bdeVariables: {
-    address: 'IB0',
-    mask: '10000111',
-    publishUnknownState: false,
-  },
   analogVariables: {
     counter: {
       address: 'DB1,INT1040',
@@ -35,6 +30,11 @@ const defaultSetting = {
     temp: {
       address: 'DB1,INT1042',
     },
+  },
+  bdeVariables: {
+    address: 'IB0',
+    mask: '10000111',
+    publishUnknownState: false,
   },
   rules: {
     On: {
