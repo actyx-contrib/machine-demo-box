@@ -1,8 +1,9 @@
-import { log } from './logger'
 import { appSettings } from './utils'
 import { dbInit, getOffsetMap, insertToDb } from './db'
 import { errorExport } from './eventExporter'
-import { OffsetMap, Pond, Tag } from '@actyx/pond'
+import { EventsSortOrder, OffsetMap, Pond, Tag } from '@actyx/pond'
+import { mkDbExporterFish } from '../fish/DB-ExporterFish'
+import { ErrorFish } from '../fish/ErrorFish'
 
 const defaultSettings = {
   db: {
@@ -19,10 +20,14 @@ const settings = appSettings(defaultSettings)
 const exitApp = () => process.exit(6)
 
 const main = async () => {
-  const pond = await Pond.default()
-  log.info('init PostgreSQL connection')
+  const pond = await Pond.default({
+    appId: 'com.example.demobox.db-export',
+    displayName: 'DB-Exporter',
+    version: '1.0.0',
+  })
+  console.info('init PostgreSQL connection')
   const pg = await dbInit(settings.db)
-  log.info('PostgreSQL connected')
+  console.info('PostgreSQL connected')
 
   errorExport(pond, pg)
 
@@ -30,39 +35,59 @@ const main = async () => {
 
   let queryActive = false
 
-  const bulkInsert = async (lowerBound: OffsetMap): Promise<OffsetMap> => {
+  const bulkInsert = (lowerBound: OffsetMap): Promise<OffsetMap> => {
     queryActive = true
-    const newLowerBound = await pond.events().queryAllKnownChunked(
-      {
-        lowerBound,
-        order: 'Asc',
-        query: Tag('Machine.state').or(Tag('Machine.values')),
-      },
-      100,
-      async (chunk) => {
-        log.info('add events:', { lng: chunk.events.length })
-        await insertToDb(pg, chunk.events, chunk.upperBound)
-      },
+    let newLowerBound = lowerBound
+    return new Promise((res) =>
+      pond.events().queryAllKnownChunked(
+        {
+          lowerBound,
+          order: EventsSortOrder.Ascending,
+          query: Tag('Machine.state').or(Tag('Machine.values')),
+        },
+        100,
+        async (chunk) => {
+          newLowerBound = chunk.upperBound
+          console.info('add events:', { lng: chunk.events.length })
+          await insertToDb(pg, chunk.events, chunk.upperBound)
+        },
+        () => res(newLowerBound),
+      ),
     )
-    queryActive = false
-    return newLowerBound
   }
 
   // trigger a new export after 5 Seconds
   setInterval(() => {
     if (queryActive === false) {
-      log.debug('start next export run', { lowerBound })
+      console.debug('start next export run', { lowerBound })
       bulkInsert(lowerBound)
         .then((bound) => (lowerBound = bound))
         .catch((e: unknown) => {
-          log.error(`restart app after an exception in bulkInsert`, e)
+          console.error(`restart app after an exception in bulkInsert`, e)
           exitApp()
         })
     } else {
-      log.warn('blocked by backpressure')
+      console.warn('blocked by backpressure')
     }
   }, 5000)
-  log.info('DB-Exporter started')
+  console.info('DB-Exporter started')
+
+  pond.observe(
+    mkDbExporterFish(
+      (a, metadata) => {
+        console.log(
+          Object.keys(a[0]).length,
+          Object.keys(a[1]).length,
+          metadata.timestampAsDate().toLocaleTimeString(),
+        )
+      },
+      1,
+      ErrorFish.registry(),
+      ErrorFish.registryOpen(),
+    ),
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    () => {},
+  )
 }
 main().catch((e: unknown) => {
   console.log(e)

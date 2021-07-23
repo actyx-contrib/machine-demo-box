@@ -1,5 +1,4 @@
 import { Settings } from './index'
-import { log } from './logger'
 import { Client } from 'pg'
 import {
   isStateChangedEvent,
@@ -122,7 +121,7 @@ export const updateOffsetMap = async (client: Client, offsetMap: OffsetMap): Pro
       'INSERT INTO public."t_offsetMap" ("id", "offsetMap") VALUES ($1, $2) ON CONFLICT ("id") DO UPDATE SET "offsetMap" = EXCLUDED."offsetMap"',
       [1, JSON.stringify(offsetMap)],
     )
-    .catch((err) => log.error(err.stack, offsetMap))
+    .catch((err) => console.error(err.stack, offsetMap))
 }
 
 export const insertStateEvent = async (
@@ -146,7 +145,7 @@ export const insertStateEvent = async (
        VALUES ${values}
        ON CONFLICT ("id") DO NOTHING`,
     )
-    .catch((err) => log.error(err.stack, events.length))
+    .catch((err) => console.error(err.stack, events.length))
 }
 
 export const insertValueEvent = async (
@@ -170,7 +169,7 @@ export const insertValueEvent = async (
        VALUES ${values}
        ON CONFLICT ("id") DO NOTHING`,
     )
-    .catch((err) => log.error(err.stack, events.length))
+    .catch((err) => console.error(err.stack, events.length))
 }
 
 export type DbError = {
@@ -213,5 +212,5 @@ export const updateErrors = async (client: Client, errors: DbErrors): Promise<vo
        "acknowledgedTimestamp" = excluded."acknowledgedTimestamp",
        "ignoredTimestamp" = excluded."ignoredTimestamp";`,
     )
-    .catch((err) => log.error(err.stack, errors.length))
+    .catch((err) => console.error(err.stack, errors.length))
 }

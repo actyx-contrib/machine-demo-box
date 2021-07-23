@@ -1,21 +1,18 @@
-import { Client } from '@actyx/os-sdk'
 import { StateChangedEvent, ValueChangedEvent } from '../db-exporter/events'
 import { Pond, Tag, Tags } from '@actyx/pond'
 import * as uuid from 'uuid'
 
-export const es = Client().eventService
-
-export const renderTag = (machineName: string, errorId: string) => (
-  rawTag: string,
-): Tags<unknown> => {
-  if (rawTag.endsWith(':{id}')) {
-    return Tag(rawTag.split(':')[0]).withId(machineName)
-  } else if (rawTag.endsWith(':{uuid}')) {
-    return Tag(rawTag.split(':')[0]).withId(errorId)
-  } else {
-    return Tag(rawTag)
+export const renderTag =
+  (machineName: string, errorId: string) =>
+  (rawTag: string): Tags<unknown> => {
+    if (rawTag.endsWith(':{id}')) {
+      return Tag(rawTag.split(':')[0]).withId(machineName)
+    } else if (rawTag.endsWith(':{uuid}')) {
+      return Tag(rawTag.split(':')[0]).withId(errorId)
+    } else {
+      return Tag(rawTag)
+    }
   }
-}
 export const renderTags = (tags: string[], machineName: string, errorId: string): Tags<unknown> =>
   tags.map(renderTag(machineName, errorId)).reduce((acc, tag) => acc.and(tag), Tags())
 

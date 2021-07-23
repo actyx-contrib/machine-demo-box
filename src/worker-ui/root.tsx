@@ -9,7 +9,16 @@ const onError = () => {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Pond loadComponent={<div>Connecting to ActyxOS</div>} onError={onError}>
+    <Pond
+      manifest={{
+        appId: 'com.example.demobox.worker-ui',
+        displayName: 'Worker UI',
+        version: '1.0.0',
+      }}
+      loadComponent={<div>Connecting to ActyxOS</div>}
+      onError={onError}
+      connectionOpts={{ onConnectionLost: onError }}
+    >
       <App />
     </Pond>
   </React.StrictMode>,

@@ -44,7 +44,11 @@ const getRandomError = (): RandomError => {
   }
 }
 
-Pond.default().then((pond) => {
+Pond.default({
+  appId: 'com.example.demobox.mock-machine-connector',
+  displayName: 'Mock Machine Connector',
+  version: '1.0.0',
+}).then((pond) => {
   const em = mkEmitter(pond)
 
   machines.forEach((name) => {
