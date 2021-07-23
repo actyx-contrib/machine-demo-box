@@ -49,7 +49,10 @@ const main = async () => {
           console.info('add events:', { lng: chunk.events.length })
           await insertToDb(pg, chunk.events, chunk.upperBound)
         },
-        () => res(newLowerBound),
+        () => {
+          queryActive = false
+          res(newLowerBound)
+        },
       ),
     )
   }
