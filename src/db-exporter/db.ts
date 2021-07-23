@@ -36,7 +36,7 @@ const setupTables = async (client: Client) => {
   await client.query(
     `CREATE TABLE IF NOT EXISTS public."t_stateChanged"
     (
-        id character varying(40) COLLATE pg_catalog."default" NOT NULL,
+        id character varying(70) COLLATE pg_catalog."default" NOT NULL,
         "timestamp" timestamp with time zone NOT NULL,
         "lamport" integer NOT NULL,
         "device" character varying(100) COLLATE pg_catalog."default" NOT NULL,
@@ -54,7 +54,7 @@ const setupTables = async (client: Client) => {
   await client.query(
     `CREATE TABLE IF NOT EXISTS public."t_valueChanged"
     (
-        "id" character varying(40) COLLATE pg_catalog."default" NOT NULL,
+        "id" character varying(70) COLLATE pg_catalog."default" NOT NULL,
         "timestamp" timestamp with time zone NOT NULL,
         "lamport" integer NOT NULL,
         "device" varchar(100) COLLATE pg_catalog."default" NOT NULL,
@@ -72,7 +72,7 @@ const setupTables = async (client: Client) => {
   await client.query(
     `CREATE TABLE IF NOT EXISTS public."t_error"
     (
-        "id" character varying(40) COLLATE pg_catalog."default" NOT NULL,
+        "id" character varying(70) COLLATE pg_catalog."default" NOT NULL,
         "timestamp" timestamp with time zone NOT NULL,
         "state" varchar(100) COLLATE pg_catalog."default" NOT NULL,
         "device" varchar(100) COLLATE pg_catalog."default" NOT NULL,
@@ -212,5 +212,5 @@ export const updateErrors = async (client: Client, errors: DbErrors): Promise<vo
        "acknowledgedTimestamp" = excluded."acknowledgedTimestamp",
        "ignoredTimestamp" = excluded."ignoredTimestamp";`,
     )
-    .catch((err) => console.error(err.stack, errors.length))
+    .catch((err) => console.error('Insert error ', err.stack, errors.length))
 }
