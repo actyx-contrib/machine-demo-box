@@ -2,8 +2,6 @@ import { appSettings } from './utils'
 import { dbInit, getOffsetMap, insertToDb } from './db'
 import { errorExport } from './eventExporter'
 import { EventsSortOrder, OffsetMap, Pond, Tag } from '@actyx/pond'
-import { mkDbExporterFish } from '../fish/DB-ExporterFish'
-import { ErrorFish } from '../fish/ErrorFish'
 
 const defaultSettings = {
   db: {
@@ -71,23 +69,6 @@ const main = async () => {
     }
   }, 5000)
   console.info('DB-Exporter started')
-
-  pond.observe(
-    mkDbExporterFish(
-      (a, metadata) => {
-        console.log(
-          Object.keys(a[0]).length,
-          Object.keys(a[1]).length,
-          metadata.timestampAsDate().toLocaleTimeString(),
-        )
-      },
-      1,
-      ErrorFish.registry(),
-      ErrorFish.registryOpen(),
-    ),
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    () => {},
-  )
 }
 main().catch((e: unknown) => {
   console.log(e)
