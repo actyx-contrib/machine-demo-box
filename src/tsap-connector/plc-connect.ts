@@ -1,5 +1,3 @@
-import { log } from './logger'
-
 import nodes7, { ReadAllCallback } from 'nodes7'
 import { Settings } from './settings'
 import { mkEmitter } from './emitter'
@@ -22,7 +20,7 @@ export const main = (actyx: Pond, settings: Settings): void => {
   const plc = new nodes7()
   plc.initiateConnection(settings.tsap, (error) => {
     if (error) {
-      log.error('failed to connect to plc', error)
+      console.error('failed to connect to plc', error)
       process.exit(6)
       return
     }
@@ -52,7 +50,7 @@ export const readValues = (
 
   return (error: unknown, values: Values): Values => {
     if (error) {
-      log.error('failed to read values from PLC', error)
+      console.error('failed to read values from PLC', error)
       return lastValue
     }
     const { bde, ...analog } = values
@@ -80,7 +78,7 @@ export const readValues = (
       } else if (settings.bdeVariables.publishUnknownState) {
         mkEmitter(actyx).stateEvent(settings.bdeTags, settings.machineName, 1000, 'Unknown')
       } else {
-        log.debug('ignore new BDE state: ', { lastBde, bde })
+        console.debug('ignore new BDE state: ', { lastBde, bde })
       }
     }
 

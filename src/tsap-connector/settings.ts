@@ -1,4 +1,3 @@
-import { log } from './logger'
 import Ajv from 'ajv'
 import schema from './settings-schema.json'
 
@@ -71,13 +70,13 @@ export const appSettings = <S>(defaultSettings: S): S => {
       const validate = new Ajv().compile(schema)
       const valid = validate(settings)
       if (!valid) {
-        log.error('failed to parse APP_SETTINGS', { error: validate.errors || 'unknown' })
+        console.error('failed to parse APP_SETTINGS', { error: validate.errors || 'unknown' })
       }
 
       return settings
     }
   } catch (e) {
-    log.error('failed to parse APP_SETTINGS', process.env.APP_SETTINGS)
+    console.error('failed to parse APP_SETTINGS', process.env.APP_SETTINGS)
   }
   return defaultSettings
 }

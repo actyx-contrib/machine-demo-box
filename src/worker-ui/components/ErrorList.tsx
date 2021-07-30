@@ -53,17 +53,6 @@ export const ErrorList = (): JSX.Element => {
               ))}
           </UI.TableBody>
         </UI.Table>
-        {/* <div style={{border: 'solid 1px #444689', borderRadius: 4}}>
-          <div style={{display: 'flex'}}>
-              <div style={{margin: '12px 24px'}}>Timestamp</div>
-              <div style={{margin: '12px 24px'}}>Machine</div>
-              <div style={{margin: '12px 24px'}}>Error Code</div>
-          </div>
-          <div>{
-            errorList.state.map(entry => <UI.TableEntry entry={entry}/>)
-          }
-          </div>
-        </div> */}
       </div>
       <div style={{ margin: '24px 24px', flex: '0 1 512px' }}>
         {rowSelected && <DetailView errorId={rowSelected} closed={() => setRowSelected('')} />}

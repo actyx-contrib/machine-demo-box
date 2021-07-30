@@ -41,7 +41,16 @@ export const Root = (): JSX.Element => {
   }
   return (
     <React.StrictMode>
-      <Pond loadComponent={<Loading error={error} />} onError={onError}>
+      <Pond
+        manifest={{
+          appId: 'com.example.demobox.worker-ui',
+          displayName: 'Worker UI',
+          version: '1.0.0',
+        }}
+        loadComponent={<Loading error={error} />}
+        onError={onError}
+        connectionOpts={{ onConnectionLost: () => onError('Connection lost') }}
+      >
         <App />
       </Pond>
     </React.StrictMode>

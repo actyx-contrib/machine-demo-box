@@ -1,5 +1,4 @@
 import { Settings } from './index'
-import { log } from './logger'
 import { Client } from 'pg'
 import {
   isStateChangedEvent,
@@ -37,7 +36,7 @@ const setupTables = async (client: Client) => {
   await client.query(
     `CREATE TABLE IF NOT EXISTS public."t_stateChanged"
     (
-        id character varying(40) COLLATE pg_catalog."default" NOT NULL,
+        id character varying(70) COLLATE pg_catalog."default" NOT NULL,
         "timestamp" timestamp with time zone NOT NULL,
         "lamport" integer NOT NULL,
         "device" character varying(100) COLLATE pg_catalog."default" NOT NULL,
@@ -55,7 +54,7 @@ const setupTables = async (client: Client) => {
   await client.query(
     `CREATE TABLE IF NOT EXISTS public."t_valueChanged"
     (
-        "id" character varying(40) COLLATE pg_catalog."default" NOT NULL,
+        "id" character varying(70) COLLATE pg_catalog."default" NOT NULL,
         "timestamp" timestamp with time zone NOT NULL,
         "lamport" integer NOT NULL,
         "device" varchar(100) COLLATE pg_catalog."default" NOT NULL,
@@ -73,7 +72,7 @@ const setupTables = async (client: Client) => {
   await client.query(
     `CREATE TABLE IF NOT EXISTS public."t_error"
     (
-        "id" character varying(40) COLLATE pg_catalog."default" NOT NULL,
+        "id" character varying(70) COLLATE pg_catalog."default" NOT NULL,
         "timestamp" timestamp with time zone NOT NULL,
         "state" varchar(100) COLLATE pg_catalog."default" NOT NULL,
         "device" varchar(100) COLLATE pg_catalog."default" NOT NULL,
@@ -122,7 +121,7 @@ export const updateOffsetMap = async (client: Client, offsetMap: OffsetMap): Pro
       'INSERT INTO public."t_offsetMap" ("id", "offsetMap") VALUES ($1, $2) ON CONFLICT ("id") DO UPDATE SET "offsetMap" = EXCLUDED."offsetMap"',
       [1, JSON.stringify(offsetMap)],
     )
-    .catch((err) => log.error(err.stack, offsetMap))
+    .catch((err) => console.error(err.stack, offsetMap))
 }
 
 export const insertStateEvent = async (
@@ -146,7 +145,7 @@ export const insertStateEvent = async (
        VALUES ${values}
        ON CONFLICT ("id") DO NOTHING`,
     )
-    .catch((err) => log.error(err.stack, events.length))
+    .catch((err) => console.error(err.stack, events.length))
 }
 
 export const insertValueEvent = async (
@@ -170,7 +169,7 @@ export const insertValueEvent = async (
        VALUES ${values}
        ON CONFLICT ("id") DO NOTHING`,
     )
-    .catch((err) => log.error(err.stack, events.length))
+    .catch((err) => console.error(err.stack, events.length))
 }
 
 export type DbError = {
@@ -213,5 +212,5 @@ export const updateErrors = async (client: Client, errors: DbErrors): Promise<vo
        "acknowledgedTimestamp" = excluded."acknowledgedTimestamp",
        "ignoredTimestamp" = excluded."ignoredTimestamp";`,
     )
-    .catch((err) => log.error(err.stack, errors.length))
+    .catch((err) => console.error('Insert error ', err.stack, errors.length))
 }
