@@ -1,3 +1,7 @@
+# IMPORTANT NOTICE
+
+**This repository has been archived and is no longer maintained. You are welcome to copy the code into your own projects and continue using it at your own discretion and risk.**
+
 # 🧰 Actyx DemoBox
 
 This example contains applications to get you started with ...
